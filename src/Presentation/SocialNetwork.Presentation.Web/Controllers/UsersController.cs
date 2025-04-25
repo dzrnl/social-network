@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest();
         }
-        
+
         var userId = await _userService.CreateUser(request.Name);
 
         return Ok(userId);
