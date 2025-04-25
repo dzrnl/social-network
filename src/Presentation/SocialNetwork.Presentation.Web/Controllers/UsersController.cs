@@ -39,16 +39,21 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] GetUsersRequest request)
     {
-        if (request.PageSize > 100)
+        var response = await _userService.GetUsers(new(request.Page, request.PageSize));
+
+        if (response is GetUsersCommand.Response.InvalidRequest invalidRequest)
         {
-            return BadRequest("Page size is too large.");
+            return BadRequest(invalidRequest.Message);
         }
 
-        var users = await _userService.GetUsers(request.Page, request.PageSize);
+        if (response is GetUsersCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
 
-        var response = users.Select(UserResponse.ToResponse).ToList();
+        var success = (GetUsersCommand.Response.Success)response;
 
-        return Ok(response);
+        return Ok(success.Users);
     }
 
     [HttpGet("{id:long}")]

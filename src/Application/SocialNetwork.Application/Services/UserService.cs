@@ -9,6 +9,7 @@ namespace SocialNetwork.Application.Services;
 public class UserService : IUserService
 {
     public const int MaxNameLength = 100;
+    public const int MaxPageSize = 100;
 
     private readonly IUserRepository _userRepository;
 
@@ -40,11 +41,35 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<User>> GetUsers(int page, int pageSize)
+    public async Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request)
     {
-        var query = new PaginationQuery(page, pageSize);
+        if (request.Page < 1)
+        {
+            return new GetUsersCommand.Response.InvalidRequest("Page number must be greater than or equal to 1");
+        }
+        
+        if (request.PageSize < 1)
+        {
+            return new GetUsersCommand.Response.InvalidRequest("Page size must be greater than or equal to 1");
+        }
+        
+        if (request.PageSize > MaxPageSize)
+        {
+            return new GetUsersCommand.Response.InvalidRequest("Page size is too large");
+        }
+        
+        var query = new PaginationQuery(request.Page, request.PageSize);
 
-        return await _userRepository.FindPaged(query);
+        try
+        {
+            var users = await _userRepository.FindPaged(query);
+
+            return new GetUsersCommand.Response.Success(users);
+        }
+        catch (Exception)
+        {
+            return new GetUsersCommand.Response.Failure("Unexpected error while fetching users");
+        }
     }
 
     public async Task<User?> GetUserById(long id)

@@ -7,7 +7,7 @@ public interface IUserService
 {
     Task<CreateUserCommand.Response> CreateUser(CreateUserCommand.Request request);
 
-    Task<List<User>> GetUsers(int page, int pageSize);
+    Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request);
 
     Task<User?> GetUserById(long id);
 

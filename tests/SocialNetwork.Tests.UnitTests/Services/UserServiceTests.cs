@@ -33,7 +33,7 @@ public class UserServiceTests
         mockedUserRepository.Verify(repo =>
             repo.Add(It.Is<CreateUserQuery>(q => q.Name == userName)), Times.Once);
     }
-    
+
     [Fact]
     public async Task CreateUser_ShouldReturnFailure_WhenNameIsEmpty()
     {
@@ -44,12 +44,12 @@ public class UserServiceTests
         var response = await userService.CreateUser(new(""));
 
         var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
-        
+
         Assert.Equal("Name cannot be empty", failure.Message);
 
         mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
     }
-    
+
     [Fact]
     public async Task CreateUser_ShouldReturnFailure_WhenNameIsTooLong()
     {
@@ -67,7 +67,7 @@ public class UserServiceTests
 
         mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
     }
-    
+
     [Fact]
     public async Task CreateUser_ShouldReturnFailure_WhenRepositoryThrowsException()
     {
@@ -102,12 +102,80 @@ public class UserServiceTests
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var actualUsers = await userService.GetUsers(page, pageSize);
+        var response = await userService.GetUsers(new(page, pageSize));
 
-        Assert.Equal(expectedUsers, actualUsers);
+        var success = Assert.IsType<GetUsersCommand.Response.Success>(response);
+
+        Assert.Equal(expectedUsers, success.Users);
 
         mockedUserRepository.Verify(repo =>
             repo.FindPaged(It.Is<PaginationQuery>(q => q.Page == page && q.PageSize == pageSize)), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetUsers_ShouldReturnFailure_WhenPageIsLessThan1()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUsers(new(0, 10));
+
+        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Page number must be greater than or equal to 1", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetUsers_ShouldReturnFailure_WhenPageSizeIsLessThan1()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUsers(new(1, 0));
+
+        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Page size must be greater than or equal to 1", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetUsers_ShouldReturnFailure_WhenPageSizeExceedsMaxPageSize()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUsers(new(1, UserService.MaxPageSize + 1));
+
+        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Page size is too large", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetUsers_ShouldReturnFailure_WhenRepositoryThrowsException()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        mockedUserRepository
+            .Setup(repo => repo.FindPaged(It.IsAny<PaginationQuery>()))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUsers(new(1, 10));
+
+        var failure = Assert.IsType<GetUsersCommand.Response.Failure>(response);
+
+        Assert.Equal("Unexpected error while fetching users", failure.Message);
     }
 
     [Fact]
