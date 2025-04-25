@@ -1,5 +1,4 @@
 using SocialNetwork.Application.Contracts.Commands.Users;
-using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Contracts.Services;
 
@@ -9,7 +8,7 @@ public interface IUserService
 
     Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request);
 
-    Task<User?> GetUserById(long id);
+    Task<GetUserCommand.Response> GetUserById(GetUserCommand.Request.ById request);
 
     Task ChangeUserName(long id, string name);
 }

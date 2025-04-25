@@ -2,7 +2,7 @@ using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Contracts.Commands.Users;
 
-public class GetUsersCommand
+public static class GetUsersCommand
 {
     public sealed record Request(int Page, int PageSize);
 

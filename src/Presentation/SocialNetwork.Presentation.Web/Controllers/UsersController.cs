@@ -59,16 +59,23 @@ public class UsersController : ControllerBase
     [HttpGet("{id:long}")]
     public async Task<ActionResult<UserResponse>> GetUser(long id)
     {
-        var user = await _userService.GetUserById(id);
+        var response = await _userService.GetUserById(new(id));
 
-        if (user == null)
+        if (response is GetUserCommand.Response.NotFound)
         {
             return NotFound();
         }
 
-        var response = UserResponse.ToResponse(user);
+        if (response is GetUserCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
 
-        return Ok(response);
+        var success = (GetUserCommand.Response.Success)response;
+
+        var userResponse = UserResponse.ToResponse(success.User);
+
+        return Ok(userResponse);
     }
 
     [HttpPut("{id:long}")]

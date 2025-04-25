@@ -2,7 +2,6 @@ using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
-using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Services;
 
@@ -47,17 +46,17 @@ public class UserService : IUserService
         {
             return new GetUsersCommand.Response.InvalidRequest("Page number must be greater than or equal to 1");
         }
-        
+
         if (request.PageSize < 1)
         {
             return new GetUsersCommand.Response.InvalidRequest("Page size must be greater than or equal to 1");
         }
-        
+
         if (request.PageSize > MaxPageSize)
         {
             return new GetUsersCommand.Response.InvalidRequest("Page size is too large");
         }
-        
+
         var query = new PaginationQuery(request.Page, request.PageSize);
 
         try
@@ -72,9 +71,23 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<User?> GetUserById(long id)
+    public async Task<GetUserCommand.Response> GetUserById(GetUserCommand.Request.ById request)
     {
-        return await _userRepository.FindById(id);
+        try
+        {
+            var user = await _userRepository.FindById(request.Id);
+
+            if (user is null)
+            {
+                return new GetUserCommand.Response.NotFound();
+            }
+
+            return new GetUserCommand.Response.Success(user);
+        }
+        catch (Exception)
+        {
+            return new GetUserCommand.Response.Failure("Unexpected error while fetching user");
+        }
     }
 
     public async Task ChangeUserName(long id, string name)

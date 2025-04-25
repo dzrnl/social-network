@@ -192,11 +192,53 @@ public class UserServiceTests
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var actualUser = await userService.GetUserById(userId);
+        var response = await userService.GetUserById(new(userId));
 
-        Assert.NotNull(actualUser);
+        var success = Assert.IsType<GetUserCommand.Response.Success>(response);
 
-        Assert.Equal(expectedUser, actualUser);
+        Assert.Equal(expectedUser, success.User);
+
+        mockedUserRepository.Verify(repo => repo.FindById(userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetUserById_ShouldReturnFailure_WhenUserNotFound()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        const long userId = 1;
+
+        mockedUserRepository
+            .Setup(repo => repo.FindById(userId))
+            .ReturnsAsync((User?)null);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUserById(new(userId));
+
+        Assert.IsType<GetUserCommand.Response.NotFound>(response);
+
+        mockedUserRepository.Verify(repo => repo.FindById(userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetUserById_ShouldReturnFailure_WhenRepositoryThrowsException()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        const long userId = 1;
+
+        mockedUserRepository
+            .Setup(repo => repo.FindById(userId))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.GetUserById(new GetUserCommand.Request.ById(userId));
+
+        var failure = Assert.IsType<GetUserCommand.Response.Failure>(response);
+
+        Assert.Equal("Unexpected error while fetching user", failure.Message);
 
         mockedUserRepository.Verify(repo => repo.FindById(userId), Times.Once);
     }
