@@ -8,10 +8,27 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasKey(u => u.Id);
 
-        builder.Property(x => x.Name)
+        builder.Property(u => u.Name)
             .HasMaxLength(100)
             .IsRequired();
+
+        builder
+            .HasMany(u => u.Friends)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "Friendship",
+                join => join
+                    .HasOne<UserEntity>()
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                join => join
+                    .HasOne<UserEntity>()
+                    .WithMany()
+                    .HasForeignKey("FriendId")
+                    .OnDelete(DeleteBehavior.Cascade)
+            );
     }
 }

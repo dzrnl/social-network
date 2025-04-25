@@ -8,11 +8,16 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Application\SocialNetwork.Application.Contracts\SocialNetwork.Application.Contracts.csproj" />
+      <ProjectReference Include="..\..\Application\SocialNetwork.Application.Models\SocialNetwork.Application.Models.csproj" />
       <ProjectReference Include="..\..\Application\SocialNetwork.Application\SocialNetwork.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\SocialNetwork.Infrastructure.DataAccess\SocialNetwork.Infrastructure.DataAccess.csproj" />
     </ItemGroup>
