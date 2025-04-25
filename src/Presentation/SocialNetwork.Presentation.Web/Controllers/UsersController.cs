@@ -29,9 +29,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserResponse>>> GetAllUsers()
+    public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] GetUsersRequest request)
     {
-        var users = await _userService.GetAllUsers();
+        if (request.PageSize > 100)
+        {
+            return BadRequest("Page size is too large.");
+        }
+        
+        var users = await _userService.GetUsers(request.Page, request.PageSize);
 
         var response = users.Select(UserResponse.ToResponse).ToList();
 

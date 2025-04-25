@@ -32,23 +32,27 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetAllUsersTest()
+    public async Task GetUsersTest()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
         var expectedUsers = new List<User> { new(1, "ivanov123"), new(2, "petrov12") };
 
+        const int page = 1;
+        const int pageSize = 10;
+
         mockedUserRepository
-            .Setup(repo => repo.FindAll())
+            .Setup(repo => repo.FindPaged(It.Is<PaginationQuery>(q => q.Page == page && q.PageSize == pageSize)))
             .ReturnsAsync(expectedUsers);
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var actualUsers = await userService.GetAllUsers();
+        var actualUsers = await userService.GetUsers(page, pageSize);
 
         Assert.Equal(expectedUsers, actualUsers);
 
-        mockedUserRepository.Verify(repo => repo.FindAll(), Times.Once);
+        mockedUserRepository.Verify(repo =>
+            repo.FindPaged(It.Is<PaginationQuery>(q => q.Page == page && q.PageSize == pageSize)), Times.Once);
     }
 
     [Fact]
@@ -66,9 +70,9 @@ public class UserServiceTests
         var userService = new UserService(mockedUserRepository.Object);
 
         var actualUser = await userService.GetUserById(userId);
-        
+
         Assert.NotNull(actualUser);
-        
+
         Assert.Equal(expectedUser, actualUser);
 
         mockedUserRepository.Verify(repo => repo.FindById(userId), Times.Once);

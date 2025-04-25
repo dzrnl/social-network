@@ -23,9 +23,11 @@ public class UserService : IUserService
         return user.Id;
     }
 
-    public async Task<List<User>> GetAllUsers()
+    public async Task<List<User>> GetUsers(int page, int pageSize)
     {
-        return await _userRepository.FindAll();
+        var query = new PaginationQuery(page, pageSize);
+        
+        return await _userRepository.FindPaged(query);
     }
 
     public async Task<User?> GetUserById(long id)

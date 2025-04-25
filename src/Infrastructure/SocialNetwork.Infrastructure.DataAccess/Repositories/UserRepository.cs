@@ -26,10 +26,12 @@ public class UserRepository : IUserRepository
         return userEntity.ToDomain();
     }
 
-    public async Task<List<User>> FindAll()
+    public async Task<List<User>> FindPaged(PaginationQuery query)
     {
         return await _context.Users
             .AsNoTracking()
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(u => u.ToDomain())
             .ToListAsync();
     }

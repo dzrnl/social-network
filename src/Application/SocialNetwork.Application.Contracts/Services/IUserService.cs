@@ -6,7 +6,7 @@ public interface IUserService
 {
     Task<long> CreateUser(string name);
 
-    Task<List<User>> GetAllUsers();
+    Task<List<User>> GetUsers(int page, int pageSize);
 
     Task<User?> GetUserById(long id);
 }
