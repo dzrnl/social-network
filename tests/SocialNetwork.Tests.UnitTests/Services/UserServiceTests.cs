@@ -248,14 +248,85 @@ public class UserServiceTests
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
-        User user = new(1, "ivanov123");
+        const long userId = 1;
         const string newName = "petrov12";
+
+        mockedUserRepository
+            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .ReturnsAsync(true);
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        await userService.ChangeUserName(user.Id, newName);
+        var response = await userService.ChangeUserName(new(userId, newName));
+
+        Assert.IsType<ChangeUserNameCommand.Response.Success>(response);
 
         mockedUserRepository.Verify(repo =>
-            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == user.Id && q.Name == newName)), Times.Once);
+            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
+    }
+
+    [Fact]
+    public async Task ChangeUserName_ShouldReturnInvalidRequest_WhenNameIsInvalid()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        const long userId = 1;
+        const string invalidName = "";
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.ChangeUserName(new(userId, invalidName));
+
+        var failure = Assert.IsType<ChangeUserNameCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Name cannot be empty", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.ChangeUserName(It.IsAny<ChangeUserNameQuery>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangeUserName_ShouldReturnNotFound_WhenUserNotFound()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        const long userId = 1;
+        const string newName = "petrov12";
+
+        mockedUserRepository
+            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .ReturnsAsync(false);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.ChangeUserName(new(userId, newName));
+
+        Assert.IsType<ChangeUserNameCommand.Response.NotFound>(response);
+
+        mockedUserRepository.Verify(repo =>
+            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
+    }
+
+    [Fact]
+    public async Task ChangeUserName_ShouldReturnFailure_WhenRepositoryThrowsException()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        const long userId = 1;
+        const string newName = "petrov12";
+
+        mockedUserRepository
+            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.ChangeUserName(new(userId, newName));
+
+        var failure = Assert.IsType<ChangeUserNameCommand.Response.Failure>(response);
+
+        Assert.Equal("Unexpected error while changing user name", failure.Message);
+
+        mockedUserRepository.Verify(repo =>
+            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
     }
 }

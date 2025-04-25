@@ -90,11 +90,32 @@ public class UserService : IUserService
         }
     }
 
-    public async Task ChangeUserName(long id, string name)
+    public async Task<ChangeUserNameCommand.Response> ChangeUserName(ChangeUserNameCommand.Request request)
     {
-        var query = new ChangeUserNameQuery(id, name);
+        var validationNameError = ValidateUserName(request.Name);
 
-        await _userRepository.ChangeUserName(query);
+        if (validationNameError is not null)
+        {
+            return new ChangeUserNameCommand.Response.InvalidRequest(validationNameError);
+        }
+
+        var query = new ChangeUserNameQuery(request.Id, request.Name);
+
+        try
+        {
+            var changed = await _userRepository.ChangeUserName(query);
+
+            if (changed == false)
+            {
+                return new ChangeUserNameCommand.Response.NotFound();
+            }
+
+            return new ChangeUserNameCommand.Response.Success();
+        }
+        catch (Exception)
+        {
+            return new ChangeUserNameCommand.Response.Failure("Unexpected error while changing user name");
+        }
     }
 
     private static string? ValidateUserName(string name)

@@ -81,12 +81,22 @@ public class UsersController : ControllerBase
     [HttpPut("{id:long}")]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
-        if (string.IsNullOrEmpty(request.Name))
+        var response = await _userService.ChangeUserName(new(id, request.Name));
+
+        if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
         {
-            return BadRequest("Name cannot be empty");
+            return BadRequest(invalidRequest.Message);
         }
 
-        await _userService.ChangeUserName(id, request.Name);
+        if (response is ChangeUserNameCommand.Response.NotFound)
+        {
+            return NotFound();
+        }
+
+        if (response is ChangeUserNameCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
 
         return Ok();
     }

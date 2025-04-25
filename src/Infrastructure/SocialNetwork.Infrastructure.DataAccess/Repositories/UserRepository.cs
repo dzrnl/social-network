@@ -45,12 +45,14 @@ public class UserRepository : IUserRepository
         return userEntity?.ToDomain();
     }
 
-    public async Task ChangeUserName(ChangeUserNameQuery query)
+    public async Task<bool> ChangeUserName(ChangeUserNameQuery query)
     {
-        await _context.Users
+        var affectedRows = await _context.Users
             .Where(u => u.Id == query.Id)
             .ExecuteUpdateAsync(u
                 => u.SetProperty(x => x.Name, query.Name));
+
+        return affectedRows > 0;
     }
 
     public async Task<long> Delete(long id)
