@@ -1,6 +1,7 @@
 using Moq;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
+using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Services;
 using Xunit;
@@ -14,8 +15,8 @@ public class UserServiceTests
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
-        const string userName = "ivanov123";
         const long userId = 1;
+        const string userName = "ivanov123";
 
         mockedUserRepository
             .Setup(repo => repo.Add(It.Is<CreateUserQuery>(q => q.Name == userName)))
@@ -23,12 +24,66 @@ public class UserServiceTests
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var userIdResult = await userService.CreateUser(userName);
+        var response = await userService.CreateUser(new(userName));
 
-        Assert.Equal(userId, userIdResult);
+        var success = Assert.IsType<CreateUserCommand.Response.Success>(response);
+
+        Assert.Equal(userId, success.Id);
 
         mockedUserRepository.Verify(repo =>
             repo.Add(It.Is<CreateUserQuery>(q => q.Name == userName)), Times.Once);
+    }
+    
+    [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenNameIsEmpty()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.CreateUser(new(""));
+
+        var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
+        
+        Assert.Equal("Name cannot be empty", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenNameIsTooLong()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var longUserName = new string('a', UserService.MaxNameLength + 1);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.CreateUser(new(longUserName));
+
+        var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Name is too long", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenRepositoryThrowsException()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        mockedUserRepository
+            .Setup(repo => repo.Add(It.IsAny<CreateUserQuery>()))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.CreateUser(new("name"));
+
+        var failure = Assert.IsType<CreateUserCommand.Response.Failure>(response);
+
+        Assert.Equal("Unexpected error while creating user", failure.Message);
     }
 
     [Fact]

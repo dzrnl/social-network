@@ -1,10 +1,11 @@
+using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Contracts.Services;
 
 public interface IUserService
 {
-    Task<long> CreateUser(string name);
+    Task<CreateUserCommand.Response> CreateUser(CreateUserCommand.Request request);
 
     Task<List<User>> GetUsers(int page, int pageSize);
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Presentation.Web.Contracts;
 
@@ -18,14 +19,21 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<long>> CreateUser(CreateUserRequest request)
     {
-        if (string.IsNullOrEmpty(request.Name))
+        var response = await _userService.CreateUser(new(request.Name));
+
+        if (response is CreateUserCommand.Response.InvalidRequest invalidRequest)
         {
-            return BadRequest();
+            return BadRequest(invalidRequest.Message);
         }
 
-        var userId = await _userService.CreateUser(request.Name);
+        if (response is CreateUserCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
 
-        return Ok(userId);
+        var success = (CreateUserCommand.Response.Success)response;
+
+        return Ok(success.Id);
     }
 
     [HttpGet]
@@ -35,7 +43,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest("Page size is too large.");
         }
-        
+
         var users = await _userService.GetUsers(request.Page, request.PageSize);
 
         var response = users.Select(UserResponse.ToResponse).ToList();
@@ -57,7 +65,7 @@ public class UsersController : ControllerBase
 
         return Ok(response);
     }
-    
+
     [HttpPut("{id:long}")]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
