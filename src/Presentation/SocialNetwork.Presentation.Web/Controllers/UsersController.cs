@@ -57,4 +57,17 @@ public class UsersController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpPut("{id:long}")]
+    public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Name))
+        {
+            return BadRequest("Name cannot be empty");
+        }
+
+        await _userService.ChangeUserName(id, request.Name);
+
+        return Ok();
+    }
 }

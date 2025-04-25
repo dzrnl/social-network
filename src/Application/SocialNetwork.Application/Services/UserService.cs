@@ -34,4 +34,11 @@ public class UserService : IUserService
     {
         return await _userRepository.FindById(id);
     }
+
+    public async Task ChangeUserName(long id, string name)
+    {
+        var query = new ChangeUserNameQuery(id, name);
+        
+        await _userRepository.ChangeUserName(query);
+    }
 }

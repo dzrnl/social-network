@@ -9,4 +9,6 @@ public interface IUserService
     Task<List<User>> GetUsers(int page, int pageSize);
 
     Task<User?> GetUserById(long id);
+
+    Task ChangeUserName(long id, string name);
 }

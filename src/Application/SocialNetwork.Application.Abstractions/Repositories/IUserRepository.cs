@@ -10,4 +10,6 @@ public interface IUserRepository
     Task<List<User>> FindPaged(PaginationQuery query);
 
     Task<User?> FindById(long id);
+    
+    Task ChangeUserName(ChangeUserNameQuery query);
 }

@@ -77,4 +77,20 @@ public class UserServiceTests
 
         mockedUserRepository.Verify(repo => repo.FindById(userId), Times.Once);
     }
+
+    [Fact]
+    public async Task ChangeUserNameTest()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        User user = new(1, "ivanov123");
+        const string newName = "petrov12";
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        await userService.ChangeUserName(user.Id, newName);
+
+        mockedUserRepository.Verify(repo =>
+            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == user.Id && q.Name == newName)), Times.Once);
+    }
 }
