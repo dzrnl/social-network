@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Infrastructure.Security;
 using SocialNetwork.Presentation.Web.Contracts;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
@@ -10,10 +12,12 @@ namespace SocialNetwork.Presentation.Web.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IOptions<TokenOptions> _tokenOptions;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IOptions<TokenOptions> tokenOptions)
     {
         _authService = authService;
+        _tokenOptions = tokenOptions;
     }
 
     [HttpPost("register")]
@@ -59,8 +63,10 @@ public class AuthController : ControllerBase
         var success = (LoginUserCommand.Response.Success)response;
 
         var token = success.Token;
+        
+        var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
-        HttpContext.Response.Cookies.Append("access_token", token);
+        HttpContext.Response.Cookies.Append(cookieName, token);
 
         return Ok();
     }

@@ -14,18 +14,25 @@ public static class ServiceCollectionExtensions
     {
         collection.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
+        collection.Configure<TokenOptions>(configuration.GetSection(nameof(TokenOptions)));
+
         collection.AddScoped<IPasswordHasher, PasswordHasher>();
 
         collection.AddScoped<IJwtProvider, JwtProvider>();
-        
+
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
-        
-        AddApiAuthentication(collection, jwtOptions);
+        var tokenOptions = configuration.GetSection(nameof(TokenOptions)).Get<TokenOptions>();
+
+        if (jwtOptions != null && tokenOptions != null)
+        {
+            AddApiAuthentication(collection, jwtOptions, tokenOptions);
+        }
 
         return collection;
     }
 
-    public static void AddApiAuthentication(this IServiceCollection collection, JwtOptions jwtOptions)
+    public static void AddApiAuthentication(this IServiceCollection collection, JwtOptions jwtOptions,
+        TokenOptions tokenOptions)
     {
         collection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
@@ -41,9 +48,8 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context => 
-                    {
-                        context.Token = context.Request.Cookies["access_token"];
+                    OnMessageReceived = context => {
+                        context.Token = context.Request.Cookies[tokenOptions.AccessTokenCookieName];
 
                         return Task.CompletedTask;
                     }
