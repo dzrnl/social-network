@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SocialNetwork.Application.Abstractions.Dtos;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Models;
@@ -68,5 +69,19 @@ public class UserRepository : IUserRepository
             .ExecuteDeleteAsync();
 
         return affectedRows > 0;
+    }
+
+    public async Task<UserCredentials?> FindCredentialsByUsername(string username)
+    {
+        var userEntity = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == username);
+
+        if (userEntity is null)
+        {
+            return null;
+        }
+        
+        return new UserCredentials(userEntity.Id, userEntity.Username, userEntity.PasswordHash);
     }
 }

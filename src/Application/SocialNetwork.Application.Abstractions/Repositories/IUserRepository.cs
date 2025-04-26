@@ -1,3 +1,4 @@
+using SocialNetwork.Application.Abstractions.Dtos;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Models;
 
@@ -14,4 +15,6 @@ public interface IUserRepository
     Task<bool> ChangeName(ChangeUserNameQuery query);
 
     Task<bool> Delete(long id);
+    
+    Task<UserCredentials?> FindCredentialsByUsername(string username);
 }

@@ -1,6 +1,6 @@
-namespace SocialNetwork.Application.Contracts.Commands.Users;
+namespace SocialNetwork.Application.Contracts.Commands.Auth;
 
-public static class CreateUserCommand
+public static class RegisterUserCommand
 {
     public sealed record Request(string Username, string Password, string Name);
 
@@ -13,5 +13,7 @@ public static class CreateUserCommand
         public record Failure(string Message) : Response;
 
         public sealed record InvalidRequest(string Message) : Failure(Message);
+        
+        // TODO: unique login
     }
 }

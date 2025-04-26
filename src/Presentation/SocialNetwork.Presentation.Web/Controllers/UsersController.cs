@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
@@ -14,26 +15,6 @@ public class UsersController : ControllerBase
     public UsersController(IUserService userService)
     {
         _userService = userService;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<long>> CreateUser(CreateUserRequest request)
-    {
-        var response = await _userService.CreateUser(new(request.Username, request.Password, request.Name));
-
-        if (response is CreateUserCommand.Response.InvalidRequest invalidRequest)
-        {
-            return BadRequest(invalidRequest.Message);
-        }
-
-        if (response is CreateUserCommand.Response.Failure failure)
-        {
-            return StatusCode(500, failure.Message);
-        }
-
-        var success = (CreateUserCommand.Response.Success)response;
-
-        return Ok(success.Id);
     }
 
     [HttpGet]
@@ -79,6 +60,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{id:long}")]
+    [Authorize] // TODO: get current user
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
         var response = await _userService.ChangeUserName(new(id, request.NewName));
@@ -102,6 +84,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize] // TODO: get current user
     public async Task<ActionResult> DeleteUser(long id)
     {
         var response = await _userService.DeleteUser(new(id));

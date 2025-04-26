@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Presentation.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Tests.UnitTests", "tests\SocialNetwork.Tests.UnitTests\SocialNetwork.Tests.UnitTests.csproj", "{38B743D7-72E3-4485-9268-7DDC77D04157}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Infrastructure.Security", "src\Infrastructure\SocialNetwork.Infrastructure.Security\SocialNetwork.Infrastructure.Security.csproj", "{48986FFB-2139-4F8A-BC39-4622FAD076A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,7 @@ Global
 		{354E4857-4CDC-4B85-AA9A-C59BFE4D5DF7} = {8E826AF1-E232-4475-BB47-C79B537ADE66}
 		{F7DEDD03-1E5A-41B4-8611-D3632F85F4F8} = {81B52F61-9626-4BA5-A49F-1ECF449B2CFB}
 		{38B743D7-72E3-4485-9268-7DDC77D04157} = {E45DB5C0-C622-4201-9C07-FF9DE674EB33}
+		{48986FFB-2139-4F8A-BC39-4622FAD076A9} = {8E826AF1-E232-4475-BB47-C79B537ADE66}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F2C59199-05C3-4773-93C1-1289D15C293E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -77,5 +80,9 @@ Global
 		{38B743D7-72E3-4485-9268-7DDC77D04157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38B743D7-72E3-4485-9268-7DDC77D04157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38B743D7-72E3-4485-9268-7DDC77D04157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48986FFB-2139-4F8A-BC39-4622FAD076A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48986FFB-2139-4F8A-BC39-4622FAD076A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48986FFB-2139-4F8A-BC39-4622FAD076A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48986FFB-2139-4F8A-BC39-4622FAD076A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

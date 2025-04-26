@@ -1,5 +1,6 @@
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.Infrastructure.DataAccess.Extensions;
+using SocialNetwork.Infrastructure.Security.Extensions;
 
 namespace SocialNetwork.Presentation.Web;
 
@@ -15,6 +16,7 @@ public class Program
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructureDataAccess(builder.Configuration);
+        builder.Services.AddInfrastructureSecurity(builder.Configuration);
 
         var app = builder.Build();
 
@@ -26,6 +28,14 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        // app.UseCookiePolicy(new CookiePolicyOptions
+        // {
+        //     MinimumSameSitePolicy = SameSiteMode.Strict,
+        //     HttpOnly = HttpOnlyPolicy.Always,
+        //     Secure = CookieSecurePolicy.Always
+        // });
+
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
