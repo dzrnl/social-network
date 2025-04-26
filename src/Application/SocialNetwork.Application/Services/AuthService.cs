@@ -38,9 +38,14 @@ public class AuthService : IAuthService
 
         try
         {
-            var user = await _userRepository.Add(query);
+            var existingUser = await _userRepository.FindByUsername(query.Username);
             
-            // TODO: unique login check
+            if (existingUser != null)
+            {
+                return new RegisterUserCommand.Response.UserAlreadyExists();
+            }
+            
+            var user = await _userRepository.Add(query);
 
             return new RegisterUserCommand.Response.Success(user.Id);
         }

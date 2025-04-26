@@ -52,6 +52,15 @@ public class UserRepository : IUserRepository
         return userEntity?.ToDomain();
     }
 
+    public async Task<User?> FindByUsername(string username)
+    {
+        var userEntity = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == username);
+
+        return userEntity?.ToDomain();
+    }
+
     public async Task<bool> ChangeName(ChangeUserNameQuery query)
     {
         var affectedRows = await _context.Users

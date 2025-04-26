@@ -14,6 +14,6 @@ public static class RegisterUserCommand
 
         public sealed record InvalidRequest(string Message) : Failure(Message);
         
-        // TODO: unique login
+        public sealed record UserAlreadyExists() : Failure("User with this username already exists");
     }
 }

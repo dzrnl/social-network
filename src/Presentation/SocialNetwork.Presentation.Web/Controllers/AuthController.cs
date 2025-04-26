@@ -30,6 +30,11 @@ public class AuthController : ControllerBase
             return BadRequest(invalidRequest.Message);
         }
 
+        if (response is RegisterUserCommand.Response.UserAlreadyExists userAlreadyExists)
+        {
+            return BadRequest(userAlreadyExists.Message);
+        }
+
         if (response is RegisterUserCommand.Response.Failure failure)
         {
             return StatusCode(500, failure.Message);
