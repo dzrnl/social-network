@@ -55,12 +55,12 @@ public class UserRepository : IUserRepository
         return affectedRows > 0;
     }
 
-    public async Task<long> Delete(long id)
+    public async Task<bool> Delete(long id)
     {
-        await _context.Users
+        var affectedRows = await _context.Users
             .Where(u => u.Id == id)
             .ExecuteDeleteAsync();
 
-        return id;
+        return affectedRows > 0;
     }
 }

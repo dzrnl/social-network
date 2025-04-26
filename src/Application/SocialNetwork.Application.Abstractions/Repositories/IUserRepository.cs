@@ -12,4 +12,6 @@ public interface IUserRepository
     Task<User?> FindById(long id);
 
     Task<bool> ChangeUserName(ChangeUserNameQuery query);
+
+    Task<bool> Delete(long id);
 }

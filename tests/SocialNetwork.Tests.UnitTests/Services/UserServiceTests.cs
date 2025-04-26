@@ -329,4 +329,66 @@ public class UserServiceTests
         mockedUserRepository.Verify(repo =>
             repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
     }
+    
+    [Fact]
+    public async Task DeleteUserTest()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+        
+        const long userId = 1;
+
+        mockedUserRepository
+            .Setup(repo => repo.Delete(userId))
+            .ReturnsAsync(true);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.DeleteUser(new(userId));
+
+        Assert.IsType<DeleteUserCommand.Response.Success>(response);
+        
+        mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteUser_ShouldReturnNotFound_WhenUserDoesNotExist()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+        
+        const long userId = 1;
+
+        mockedUserRepository
+            .Setup(repo => repo.Delete(userId))
+            .ReturnsAsync(false);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.DeleteUser(new(userId));
+
+        Assert.IsType<DeleteUserCommand.Response.NotFound>(response);
+        
+        mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteUser_ShouldReturnFailure_WhenRepositoryThrowsException()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+        
+        const long userId = 1;
+
+        mockedUserRepository
+            .Setup(repo => repo.Delete(userId))
+            .ThrowsAsync(new Exception("Database failure"));
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.DeleteUser(new(userId));
+
+        var failure = Assert.IsType<DeleteUserCommand.Response.Failure>(response);
+        
+        Assert.Equal("Unexpected error while deleting user", failure.Message);
+        
+        mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
+    }
 }

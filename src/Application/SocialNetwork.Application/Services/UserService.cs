@@ -118,6 +118,25 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<DeleteUserCommand.Response> DeleteUser(DeleteUserCommand.Request request)
+    {
+        try
+        {
+            var deleted = await _userRepository.Delete(request.Id);
+
+            if (deleted == false)
+            {
+                return new DeleteUserCommand.Response.NotFound();
+            }
+
+            return new DeleteUserCommand.Response.Success();
+        }
+        catch (Exception)
+        {
+            return new DeleteUserCommand.Response.Failure("Unexpected error while deleting user");
+        }
+    }
+
     private static string? ValidateUserName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

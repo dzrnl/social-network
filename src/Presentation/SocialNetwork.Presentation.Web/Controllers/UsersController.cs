@@ -100,4 +100,22 @@ public class UsersController : ControllerBase
 
         return Ok();
     }
+
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult> DeleteUser(long id)
+    {
+        var response = await _userService.DeleteUser(new(id));
+
+        if (response is DeleteUserCommand.Response.NotFound)
+        {
+            return NotFound();
+        }
+
+        if (response is DeleteUserCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        return Ok();
+    }
 }

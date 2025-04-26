@@ -11,4 +11,6 @@ public interface IUserService
     Task<GetUserCommand.Response> GetUserById(GetUserCommand.Request.ById request);
 
     Task<ChangeUserNameCommand.Response> ChangeUserName(ChangeUserNameCommand.Request request);
+
+    Task<DeleteUserCommand.Response> DeleteUser(DeleteUserCommand.Request request);
 }
