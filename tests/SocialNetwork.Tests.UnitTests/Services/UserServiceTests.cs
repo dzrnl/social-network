@@ -16,22 +16,42 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        const string userName = "ivanov123";
+        const string userUsername = "ivanov123";
+        const string userName = "Ivan";
 
         mockedUserRepository
-            .Setup(repo => repo.Add(It.Is<CreateUserQuery>(q => q.Name == userName)))
-            .ReturnsAsync(new User(userId, userName));
+            .Setup(repo => repo.Add(It.Is<CreateUserQuery>(q =>
+                q.Username == userUsername && q.Name == userName)))
+            .ReturnsAsync(new User(userId, userUsername, userName));
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var response = await userService.CreateUser(new(userName));
+        var response = await userService.CreateUser(new(userUsername, "pass", userName));
 
         var success = Assert.IsType<CreateUserCommand.Response.Success>(response);
 
         Assert.Equal(userId, success.Id);
 
         mockedUserRepository.Verify(repo =>
-            repo.Add(It.Is<CreateUserQuery>(q => q.Name == userName)), Times.Once);
+            repo.Add(It.Is<CreateUserQuery>(q =>
+                q.Username == userUsername && q.Name == userName)
+            ), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenUsernameIsEmpty()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.CreateUser(new("", "pass", "Name"));
+
+        var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Username cannot be empty", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
     }
 
     [Fact]
@@ -41,7 +61,7 @@ public class UserServiceTests
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var response = await userService.CreateUser(new(""));
+        var response = await userService.CreateUser(new("username", "pass", ""));
 
         var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
 
@@ -51,15 +71,33 @@ public class UserServiceTests
     }
 
     [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenUsernameIsTooLong()
+    {
+        var mockedUserRepository = new Mock<IUserRepository>();
+
+        var longUsername = new string('a', UserService.MaxUsernameLength + 1);
+
+        var userService = new UserService(mockedUserRepository.Object);
+
+        var response = await userService.CreateUser(new(longUsername, "pass", "Name"));
+
+        var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
+
+        Assert.Equal("Username is too long", failure.Message);
+
+        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
+    }
+
+    [Fact]
     public async Task CreateUser_ShouldReturnFailure_WhenNameIsTooLong()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
-        var longUserName = new string('a', UserService.MaxNameLength + 1);
+        var longName = new string('a', UserService.MaxNameLength + 1);
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var response = await userService.CreateUser(new(longUserName));
+        var response = await userService.CreateUser(new("username", "pass", longName));
 
         var failure = Assert.IsType<CreateUserCommand.Response.InvalidRequest>(response);
 
@@ -79,7 +117,7 @@ public class UserServiceTests
 
         var userService = new UserService(mockedUserRepository.Object);
 
-        var response = await userService.CreateUser(new("name"));
+        var response = await userService.CreateUser(new("username", "pass", "Name"));
 
         var failure = Assert.IsType<CreateUserCommand.Response.Failure>(response);
 
@@ -91,13 +129,18 @@ public class UserServiceTests
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
-        var expectedUsers = new List<User> { new(1, "ivanov123"), new(2, "petrov12") };
+        var expectedUsers = new List<User>
+        {
+            new(1, "ivanov123", "Ivan"),
+            new(2, "petrov12", "Peter")
+        };
 
         const int page = 1;
         const int pageSize = 10;
 
         mockedUserRepository
-            .Setup(repo => repo.FindPaged(It.Is<PaginationQuery>(q => q.Page == page && q.PageSize == pageSize)))
+            .Setup(repo => repo.FindPaged(It.Is<PaginationQuery>(q =>
+                q.Page == page && q.PageSize == pageSize)))
             .ReturnsAsync(expectedUsers);
 
         var userService = new UserService(mockedUserRepository.Object);
@@ -109,7 +152,9 @@ public class UserServiceTests
         Assert.Equal(expectedUsers, success.Users);
 
         mockedUserRepository.Verify(repo =>
-            repo.FindPaged(It.Is<PaginationQuery>(q => q.Page == page && q.PageSize == pageSize)), Times.Once);
+            repo.FindPaged(It.Is<PaginationQuery>(q =>
+                q.Page == page && q.PageSize == pageSize)
+            ), Times.Once);
     }
 
     [Fact]
@@ -184,7 +229,7 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        User expectedUser = new(userId, "ivanov123");
+        User expectedUser = new(userId, "ivanov123", "Ivan");
 
         mockedUserRepository
             .Setup(repo => repo.FindById(userId))
@@ -249,10 +294,12 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        const string newName = "petrov12";
+        const string newName = "Peter";
 
         mockedUserRepository
-            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .Setup(repo =>
+                repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                    q.Id == userId && q.NewName == newName)))
             .ReturnsAsync(true);
 
         var userService = new UserService(mockedUserRepository.Object);
@@ -262,7 +309,9 @@ public class UserServiceTests
         Assert.IsType<ChangeUserNameCommand.Response.Success>(response);
 
         mockedUserRepository.Verify(repo =>
-            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
+            repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                q.Id == userId && q.NewName == newName)
+            ), Times.Once);
     }
 
     [Fact]
@@ -281,7 +330,7 @@ public class UserServiceTests
 
         Assert.Equal("Name cannot be empty", failure.Message);
 
-        mockedUserRepository.Verify(repo => repo.ChangeUserName(It.IsAny<ChangeUserNameQuery>()), Times.Never);
+        mockedUserRepository.Verify(repo => repo.ChangeName(It.IsAny<ChangeUserNameQuery>()), Times.Never);
     }
 
     [Fact]
@@ -290,10 +339,12 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        const string newName = "petrov12";
+        const string newName = "Peter";
 
         mockedUserRepository
-            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .Setup(repo =>
+                repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                    q.Id == userId && q.NewName == newName)))
             .ReturnsAsync(false);
 
         var userService = new UserService(mockedUserRepository.Object);
@@ -303,7 +354,9 @@ public class UserServiceTests
         Assert.IsType<ChangeUserNameCommand.Response.NotFound>(response);
 
         mockedUserRepository.Verify(repo =>
-            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
+            repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                q.Id == userId && q.NewName == newName)
+            ), Times.Once);
     }
 
     [Fact]
@@ -312,10 +365,12 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        const string newName = "petrov12";
+        const string newName = "Peter";
 
         mockedUserRepository
-            .Setup(repo => repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)))
+            .Setup(repo =>
+                repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                    q.Id == userId && q.NewName == newName)))
             .ThrowsAsync(new Exception("Database error"));
 
         var userService = new UserService(mockedUserRepository.Object);
@@ -327,14 +382,16 @@ public class UserServiceTests
         Assert.Equal("Unexpected error while changing user name", failure.Message);
 
         mockedUserRepository.Verify(repo =>
-            repo.ChangeUserName(It.Is<ChangeUserNameQuery>(q => q.Id == userId && q.Name == newName)), Times.Once);
+            repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
+                q.Id == userId && q.NewName == newName)
+            ), Times.Once);
     }
-    
+
     [Fact]
     public async Task DeleteUserTest()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
-        
+
         const long userId = 1;
 
         mockedUserRepository
@@ -346,7 +403,7 @@ public class UserServiceTests
         var response = await userService.DeleteUser(new(userId));
 
         Assert.IsType<DeleteUserCommand.Response.Success>(response);
-        
+
         mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
     }
 
@@ -354,7 +411,7 @@ public class UserServiceTests
     public async Task DeleteUser_ShouldReturnNotFound_WhenUserDoesNotExist()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
-        
+
         const long userId = 1;
 
         mockedUserRepository
@@ -366,7 +423,7 @@ public class UserServiceTests
         var response = await userService.DeleteUser(new(userId));
 
         Assert.IsType<DeleteUserCommand.Response.NotFound>(response);
-        
+
         mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
     }
 
@@ -374,7 +431,7 @@ public class UserServiceTests
     public async Task DeleteUser_ShouldReturnFailure_WhenRepositoryThrowsException()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
-        
+
         const long userId = 1;
 
         mockedUserRepository
@@ -386,9 +443,9 @@ public class UserServiceTests
         var response = await userService.DeleteUser(new(userId));
 
         var failure = Assert.IsType<DeleteUserCommand.Response.Failure>(response);
-        
+
         Assert.Equal("Unexpected error while deleting user", failure.Message);
-        
+
         mockedUserRepository.Verify(repo => repo.Delete(userId), Times.Once);
     }
 }
