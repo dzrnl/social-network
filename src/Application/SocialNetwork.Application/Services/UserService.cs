@@ -7,7 +7,8 @@ namespace SocialNetwork.Application.Services;
 
 public class UserService : IUserService
 {
-    public const int MaxNameLength = 100;
+    public const int MaxUsernameLength = 50;
+    public const int MaxNameLength = 255;
     public const int MaxPageSize = 100;
 
     private readonly IUserRepository _userRepository;
@@ -19,14 +20,17 @@ public class UserService : IUserService
 
     public async Task<CreateUserCommand.Response> CreateUser(CreateUserCommand.Request request)
     {
-        var validationNameError = ValidateUserName(request.Name);
+        if (ValidateUsername(request.Username) is { } validationUsernameError)
+        {
+            return new CreateUserCommand.Response.InvalidRequest(validationUsernameError);
+        }
 
-        if (validationNameError is not null)
+        if (ValidateName(request.Name) is { } validationNameError)
         {
             return new CreateUserCommand.Response.InvalidRequest(validationNameError);
         }
 
-        var query = new CreateUserQuery(request.Name);
+        var query = new CreateUserQuery(request.Username, "", request.Name); // TODO: implement password hashing
 
         try
         {
@@ -92,18 +96,16 @@ public class UserService : IUserService
 
     public async Task<ChangeUserNameCommand.Response> ChangeUserName(ChangeUserNameCommand.Request request)
     {
-        var validationNameError = ValidateUserName(request.Name);
-
-        if (validationNameError is not null)
+        if (ValidateName(request.NewName) is { } validationNameError)
         {
             return new ChangeUserNameCommand.Response.InvalidRequest(validationNameError);
         }
 
-        var query = new ChangeUserNameQuery(request.Id, request.Name);
+        var query = new ChangeUserNameQuery(request.Id, request.NewName);
 
         try
         {
-            var changed = await _userRepository.ChangeUserName(query);
+            var changed = await _userRepository.ChangeName(query);
 
             if (changed == false)
             {
@@ -137,7 +139,22 @@ public class UserService : IUserService
         }
     }
 
-    private static string? ValidateUserName(string name)
+    private static string? ValidateUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return "Username cannot be empty";
+        }
+
+        if (username.Length > MaxUsernameLength)
+        {
+            return "Username is too long";
+        }
+
+        return null;
+    }
+
+    private static string? ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

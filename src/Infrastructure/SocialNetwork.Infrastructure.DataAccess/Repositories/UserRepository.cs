@@ -18,7 +18,12 @@ public class UserRepository : IUserRepository
 
     public async Task<User> Add(CreateUserQuery query)
     {
-        var userEntity = new UserEntity { Name = query.Name };
+        var userEntity = new UserEntity
+        {
+            Username = query.Username,
+            PasswordHash = query.PasswordHash,
+            Name = query.Name
+        };
 
         await _context.Users.AddAsync(userEntity);
         await _context.SaveChangesAsync();
@@ -30,6 +35,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .AsNoTracking()
+            .OrderBy(u => u.Username)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .Select(u => u.ToDomain())
@@ -45,12 +51,12 @@ public class UserRepository : IUserRepository
         return userEntity?.ToDomain();
     }
 
-    public async Task<bool> ChangeUserName(ChangeUserNameQuery query)
+    public async Task<bool> ChangeName(ChangeUserNameQuery query)
     {
         var affectedRows = await _context.Users
             .Where(u => u.Id == query.Id)
             .ExecuteUpdateAsync(u
-                => u.SetProperty(x => x.Name, query.Name));
+                => u.SetProperty(x => x.Name, query.NewName));
 
         return affectedRows > 0;
     }

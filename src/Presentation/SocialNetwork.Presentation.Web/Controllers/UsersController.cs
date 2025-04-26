@@ -19,7 +19,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<long>> CreateUser(CreateUserRequest request)
     {
-        var response = await _userService.CreateUser(new(request.Name));
+        var response = await _userService.CreateUser(new(request.Username, request.Password, request.Name));
 
         if (response is CreateUserCommand.Response.InvalidRequest invalidRequest)
         {
@@ -81,7 +81,7 @@ public class UsersController : ControllerBase
     [HttpPatch("{id:long}")]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
-        var response = await _userService.ChangeUserName(new(id, request.Name));
+        var response = await _userService.ChangeUserName(new(id, request.NewName));
 
         if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
         {

@@ -2,7 +2,7 @@ namespace SocialNetwork.Application.Contracts.Commands.Users;
 
 public static class ChangeUserNameCommand
 {
-    public sealed record Request(long Id, string Name);
+    public sealed record Request(long Id, string NewName);
 
     public abstract record Response
     {

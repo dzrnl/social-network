@@ -10,9 +10,17 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         builder.HasKey(u => u.Id);
 
+        builder.Property(u => u.Username)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(u => u.PasswordHash)
+            .IsRequired()
+            .HasMaxLength(255);
+
         builder.Property(u => u.Name)
-            .HasMaxLength(100)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(255);
 
         builder
             .HasMany(u => u.Friends)

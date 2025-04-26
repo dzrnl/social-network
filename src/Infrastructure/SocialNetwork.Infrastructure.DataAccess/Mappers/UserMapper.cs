@@ -7,11 +7,17 @@ public static class UserMapper
 {
     public static User ToDomain(this UserEntity userEntity)
     {
-        return new User(userEntity.Id, userEntity.Name);
+        return new User(userEntity.Id, userEntity.Username, userEntity.Name);
     }
 
-    public static UserEntity ToEntity(this User user)
+    public static UserEntity ToEntity(this User user, string passwordHash)
     {
-        return new UserEntity { Id = user.Id, Name = user.Name };
+        return new UserEntity
+        {
+            Id = user.Id,
+            Username = user.Username,
+            PasswordHash = passwordHash,
+            Name = user.Name
+        };
     }
 }
