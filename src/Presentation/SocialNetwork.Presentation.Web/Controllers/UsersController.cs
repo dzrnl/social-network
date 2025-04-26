@@ -78,7 +78,7 @@ public class UsersController : ControllerBase
         return Ok(userResponse);
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPatch("{id:long}")]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
         var response = await _userService.ChangeUserName(new(id, request.Name));
