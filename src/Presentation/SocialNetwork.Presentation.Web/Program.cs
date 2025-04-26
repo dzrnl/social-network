@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.CookiePolicy;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.Infrastructure.DataAccess.Extensions;
 using SocialNetwork.Infrastructure.Security.Extensions;
@@ -28,12 +29,12 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        // app.UseCookiePolicy(new CookiePolicyOptions
-        // {
-        //     MinimumSameSitePolicy = SameSiteMode.Strict,
-        //     HttpOnly = HttpOnlyPolicy.Always,
-        //     Secure = CookieSecurePolicy.Always
-        // });
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.Strict,
+            HttpOnly = HttpOnlyPolicy.Always,
+            Secure = CookieSecurePolicy.Always
+        });
 
         app.UseAuthentication();
         app.UseAuthorization();

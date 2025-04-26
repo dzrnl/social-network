@@ -34,8 +34,15 @@ public static class ServiceCollectionExtensions
     public static void AddApiAuthentication(this IServiceCollection collection, JwtOptions jwtOptions,
         TokenOptions tokenOptions)
     {
-        collection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        collection.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                
                 options.TokenValidationParameters = new()
                 {
                     ValidateIssuer = false,
