@@ -1,0 +1,34 @@
+@model SocialNetwork.Presentation.Web.Models.Users.UserModel
+
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+<h1>Профиль пользователя</h1>
+
+<div>
+    <p><strong>Имя:</strong> @Model.Name</p>
+    <p><strong>Имя пользователя:</strong> @Model.Username</p>
+</div>
+
+<h3>Изменить имя</h3>
+
+<form method="post" asp-action="ChangeUserName">
+    <div class="form-group">
+        <label for="NewName">Новое имя</label>
+        <input type="text" id="NewName" name="NewName" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Изменить</button>
+</form>
+
+<h3>Удалить аккаунт</h3>
+
+<form method="post" asp-action="DeleteUser">
+    <button type="submit" class="btn btn-danger">Удалить аккаунт</button>
+</form>
+
+<h3>Выход</h3>
+
+<form method="post" asp-controller="Auth" asp-action="Logout">
+    <button type="submit" class="btn btn-warning">Выйти</button>
+</form>

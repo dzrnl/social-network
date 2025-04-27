@@ -12,13 +12,15 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllersWithViews();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructureDataAccess(builder.Configuration);
         builder.Services.AddInfrastructureSecurity(builder.Configuration);
+        
+        builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
         var app = builder.Build();
 
@@ -29,6 +31,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        
+        app.UseStaticFiles();
 
         app.UseCookiePolicy(new CookiePolicyOptions
         {
@@ -43,6 +47,10 @@ public class Program
         app.UseMiddleware<AuthMiddleware>();
 
         app.MapControllers();
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Users}/{action=Profile}");
 
         app.Run();
     }

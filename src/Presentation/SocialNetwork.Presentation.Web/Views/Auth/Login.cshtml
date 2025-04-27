@@ -1,0 +1,25 @@
+@model SocialNetwork.Presentation.Web.Models.Auth.LoginModel
+
+@{
+    ViewData["Title"] = "Вход в систему";
+}
+
+<h1>Вход в систему</h1>
+
+<form method="post" asp-controller="Auth" asp-action="Login">
+    <div class="form-group">
+        <label asp-for="Username" class="form-label"></label>
+        <input asp-for="Username" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Войти</button>
+</form>
+
+<div class="mt-3">
+    <p>Нет аккаунта? <a href="/Auth/Register">Зарегистрироваться</a></p>
+</div>
