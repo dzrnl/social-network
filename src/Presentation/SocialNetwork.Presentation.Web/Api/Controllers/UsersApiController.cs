@@ -21,9 +21,9 @@ public class UsersApiController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] GetUsersRequest request)
+    public async Task<ActionResult<List<UserModel>>> GetUsers([FromQuery] GetUsersModel model)
     {
-        var response = await _userService.GetUsers(new(request.Page, request.PageSize));
+        var response = await _userService.GetUsers(new(model.Page, model.PageSize));
 
         if (response is GetUsersCommand.Response.InvalidRequest invalidRequest)
         {
@@ -41,7 +41,7 @@ public class UsersApiController : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<UserResponse>> GetUser(long id)
+    public async Task<ActionResult<UserModel>> GetUser(long id)
     {
         var response = await _userService.GetUserById(new(id));
 
@@ -57,21 +57,21 @@ public class UsersApiController : ControllerBase
 
         var success = (GetUserCommand.Response.Success)response;
 
-        var userResponse = UserResponse.ToResponse(success.User);
+        var userResponse = UserModel.ToViewModel(success.User);
 
         return Ok(userResponse);
     }
 
     [HttpPatch("{id:long}")]
     [Authorize]
-    public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
+    public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameModel model)
     {
         if (_currentUserManager.CurrentUser?.Id != id)
         {
             return Forbid();
         }
 
-        var response = await _userService.ChangeUserName(new(id, request.NewName));
+        var response = await _userService.ChangeUserName(new(id, model.NewName));
 
         if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
         {

@@ -21,7 +21,7 @@ public class AuthApiController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult> Register(RegisterUserRequest request)
+    public async Task<ActionResult> Register(RegisterModel request)
     {
         var response = await _authService.Register(new(request.Username, request.Password, request.Name));
 
@@ -46,7 +46,7 @@ public class AuthApiController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> Login(LoginUserRequest request)
+    public async Task<ActionResult> Login(LoginModel request)
     {
         var response = await _authService.Login(new(request.Username, request.Password));
 
