@@ -70,7 +70,7 @@ public class UsersController : ControllerBase
         {
             return Forbid();
         }
-        
+
         var response = await _userService.ChangeUserName(new(id, request.NewName));
 
         if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
@@ -99,7 +99,7 @@ public class UsersController : ControllerBase
         {
             return Forbid();
         }
-        
+
         var response = await _userService.DeleteUser(new(id));
 
         if (response is DeleteUserCommand.Response.NotFound)
