@@ -39,7 +39,7 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.UseMiddleware<AuthMiddleware>();
 
         app.MapControllers();

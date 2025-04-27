@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
-using SocialNetwork.Presentation.Web.Contracts.Users;
+using SocialNetwork.Presentation.Web.Models.Users;
 
 namespace SocialNetwork.Presentation.Web.Api.Controllers;
 

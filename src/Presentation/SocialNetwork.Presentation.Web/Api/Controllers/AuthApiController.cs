@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Infrastructure.Security;
-using SocialNetwork.Presentation.Web.Contracts.Auth;
+using SocialNetwork.Presentation.Web.Models.Auth;
 
 namespace SocialNetwork.Presentation.Web.Api.Controllers;
 
@@ -72,6 +72,16 @@ public class AuthApiController : ControllerBase
         var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
         HttpContext.Response.Cookies.Append(cookieName, token);
+
+        return Ok();
+    }
+
+    [HttpPost("logout")]
+    public ActionResult Logout()
+    {
+        var cookieName = _tokenOptions.Value.AccessTokenCookieName;
+
+        HttpContext.Response.Cookies.Delete(cookieName);
 
         return Ok();
     }

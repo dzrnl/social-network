@@ -1,6 +1,6 @@
 using SocialNetwork.Application.Models;
 
-namespace SocialNetwork.Presentation.Web.Contracts.Users;
+namespace SocialNetwork.Presentation.Web.Models.Users;
 
 public record UserResponse(long Id, string Username, string Name)
 {
