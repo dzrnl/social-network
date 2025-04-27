@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.Infrastructure.DataAccess.Extensions;
 using SocialNetwork.Infrastructure.Security.Extensions;
+using SocialNetwork.Presentation.Web.Middlewares;
 
 namespace SocialNetwork.Presentation.Web;
 
@@ -38,6 +39,8 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+        
+        app.UseMiddleware<AuthMiddleware>();
 
         app.MapControllers();
 
