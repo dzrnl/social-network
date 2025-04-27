@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
-using SocialNetwork.Presentation.Web.Contracts;
+using SocialNetwork.Presentation.Web.Contracts.Users;
 
-namespace SocialNetwork.Presentation.Web.Controllers;
+namespace SocialNetwork.Presentation.Web.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class UsersController : ControllerBase
+[Route("api/users")]
+public class UsersApiController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly CurrentUserManager _currentUserManager;
 
-    public UsersController(IUserService userService, CurrentUserManager userManager)
+    public UsersApiController(IUserService userService, CurrentUserManager userManager)
     {
         _userService = userService;
         _currentUserManager = userManager;

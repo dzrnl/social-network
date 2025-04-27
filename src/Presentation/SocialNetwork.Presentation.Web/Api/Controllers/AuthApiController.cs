@@ -3,18 +3,18 @@ using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Infrastructure.Security;
-using SocialNetwork.Presentation.Web.Contracts;
+using SocialNetwork.Presentation.Web.Contracts.Auth;
 
-namespace SocialNetwork.Presentation.Web.Controllers;
+namespace SocialNetwork.Presentation.Web.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class AuthController : ControllerBase
+[Route("api/auth")]
+public class AuthApiController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IOptions<TokenOptions> _tokenOptions;
 
-    public AuthController(IAuthService authService, IOptions<TokenOptions> tokenOptions)
+    public AuthApiController(IAuthService authService, IOptions<TokenOptions> tokenOptions)
     {
         _authService = authService;
         _tokenOptions = tokenOptions;
@@ -49,12 +49,12 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Login(LoginUserRequest request)
     {
         var response = await _authService.Login(new(request.Username, request.Password));
-        
+
         if (response is LoginUserCommand.Response.NotFound)
         {
             return NotFound();
         }
-        
+
         if (response is LoginUserCommand.Response.InvalidCredentials invalidCredentials)
         {
             return Unauthorized(invalidCredentials.Message);
@@ -64,11 +64,11 @@ public class AuthController : ControllerBase
         {
             return StatusCode(500, failure.Message);
         }
-        
+
         var success = (LoginUserCommand.Response.Success)response;
 
         var token = success.Token;
-        
+
         var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
         HttpContext.Response.Cookies.Append(cookieName, token);
