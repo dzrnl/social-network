@@ -2,13 +2,12 @@ using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
 
 public class UserService : IUserService
 {
-    public const int MaxUsernameLength = 50;
-    public const int MaxNameLength = 255;
     public const int MaxPageSize = 100;
 
     private readonly IUserRepository _userRepository;
@@ -16,32 +15,6 @@ public class UserService : IUserService
     public UserService(IUserRepository userRepository)
     {
         _userRepository = userRepository;
-    }
-
-    public async Task<CreateUserCommand.Response> CreateUser(CreateUserCommand.Request request)
-    {
-        if (ValidateUsername(request.Username) is { } validationUsernameError)
-        {
-            return new CreateUserCommand.Response.InvalidRequest(validationUsernameError);
-        }
-
-        if (ValidateName(request.Name) is { } validationNameError)
-        {
-            return new CreateUserCommand.Response.InvalidRequest(validationNameError);
-        }
-
-        var query = new CreateUserQuery(request.Username, "", request.Name); // TODO: implement password hashing
-
-        try
-        {
-            var user = await _userRepository.Add(query);
-
-            return new CreateUserCommand.Response.Success(user.Id);
-        }
-        catch (Exception)
-        {
-            return new CreateUserCommand.Response.Failure("Unexpected error while creating user");
-        }
     }
 
     public async Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request)
@@ -96,7 +69,7 @@ public class UserService : IUserService
 
     public async Task<ChangeUserNameCommand.Response> ChangeUserName(ChangeUserNameCommand.Request request)
     {
-        if (ValidateName(request.NewName) is { } validationNameError)
+        if (UserValidation.ValidateName(request.NewName) is { } validationNameError)
         {
             return new ChangeUserNameCommand.Response.InvalidRequest(validationNameError);
         }
@@ -137,35 +110,5 @@ public class UserService : IUserService
         {
             return new DeleteUserCommand.Response.Failure("Unexpected error while deleting user");
         }
-    }
-
-    private static string? ValidateUsername(string username)
-    {
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            return "Username cannot be empty";
-        }
-
-        if (username.Length > MaxUsernameLength)
-        {
-            return "Username is too long";
-        }
-
-        return null;
-    }
-
-    private static string? ValidateName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return "Name cannot be empty";
-        }
-
-        if (name.Length > MaxNameLength)
-        {
-            return "Name is too long";
-        }
-
-        return null;
     }
 }

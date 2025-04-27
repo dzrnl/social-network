@@ -20,6 +20,7 @@
       <ProjectReference Include="..\..\Application\SocialNetwork.Application.Models\SocialNetwork.Application.Models.csproj" />
       <ProjectReference Include="..\..\Application\SocialNetwork.Application\SocialNetwork.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\SocialNetwork.Infrastructure.DataAccess\SocialNetwork.Infrastructure.DataAccess.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\SocialNetwork.Infrastructure.Security\SocialNetwork.Infrastructure.Security.csproj" />
     </ItemGroup>
 
 </Project>

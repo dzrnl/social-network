@@ -4,8 +4,6 @@ namespace SocialNetwork.Application.Contracts.Services;
 
 public interface IUserService
 {
-    Task<CreateUserCommand.Response> CreateUser(CreateUserCommand.Request request);
-
     Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request);
 
     Task<GetUserCommand.Response> GetUserById(GetUserCommand.Request.ById request);

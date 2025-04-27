@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Services;
 using SocialNetwork.Presentation.Web.Contracts;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
@@ -10,30 +12,12 @@ namespace SocialNetwork.Presentation.Web.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly CurrentUserManager _currentUserManager;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, CurrentUserManager userManager)
     {
         _userService = userService;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<long>> CreateUser(CreateUserRequest request)
-    {
-        var response = await _userService.CreateUser(new(request.Username, request.Password, request.Name));
-
-        if (response is CreateUserCommand.Response.InvalidRequest invalidRequest)
-        {
-            return BadRequest(invalidRequest.Message);
-        }
-
-        if (response is CreateUserCommand.Response.Failure failure)
-        {
-            return StatusCode(500, failure.Message);
-        }
-
-        var success = (CreateUserCommand.Response.Success)response;
-
-        return Ok(success.Id);
+        _currentUserManager = userManager;
     }
 
     [HttpGet]
@@ -79,8 +63,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{id:long}")]
+    [Authorize]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
     {
+        if (_currentUserManager.CurrentUser?.Id != id)
+        {
+            return Forbid();
+        }
+
         var response = await _userService.ChangeUserName(new(id, request.NewName));
 
         if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
@@ -102,8 +92,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize]
     public async Task<ActionResult> DeleteUser(long id)
     {
+        if (_currentUserManager.CurrentUser?.Id != id)
+        {
+            return Forbid();
+        }
+
         var response = await _userService.DeleteUser(new(id));
 
         if (response is DeleteUserCommand.Response.NotFound)
