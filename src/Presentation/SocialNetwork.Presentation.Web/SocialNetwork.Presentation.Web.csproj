@@ -23,4 +23,8 @@
       <ProjectReference Include="..\..\Infrastructure\SocialNetwork.Infrastructure.Security\SocialNetwork.Infrastructure.Security.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="Properties\**" />
+    </ItemGroup>
+
 </Project>
