@@ -36,7 +36,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .AsNoTracking()
-            .OrderBy(u => u.Username)
+            .OrderBy(u => u.Id)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .Select(u => u.ToDomain())
@@ -90,7 +90,7 @@ public class UserRepository : IUserRepository
         {
             return null;
         }
-        
+
         return new UserCredentials(userEntity.Id, userEntity.Username, userEntity.PasswordHash);
     }
 }

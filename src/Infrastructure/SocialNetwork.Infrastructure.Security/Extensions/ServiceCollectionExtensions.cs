@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         return collection;
     }
 
-    public static void AddApiAuthentication(this IServiceCollection collection, JwtOptions jwtOptions,
+    private static void AddApiAuthentication(this IServiceCollection collection, JwtOptions jwtOptions,
         TokenOptions tokenOptions)
     {
         collection.AddAuthentication(options => {
@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
-                
+
                 options.TokenValidationParameters = new()
                 {
                     ValidateIssuer = false,
