@@ -37,6 +37,8 @@ public class UsersController : Controller
         var user = ((GetUserCommand.Response.Success)response).User;
 
         var userModel = UserModel.ToViewModel(user);
+        
+        ViewBag.CurrentUser = currentUser;
 
         if (currentUser.Username != user.Username)
         {

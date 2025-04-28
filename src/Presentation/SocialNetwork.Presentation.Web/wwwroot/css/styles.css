@@ -1,3 +1,4 @@
+/* Базовые стили */
 body {
     background-color: #e7e8ec;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -5,6 +6,118 @@ body {
     padding: 0;
 }
 
+/* Стили для хедера */
+.site-header {
+    background-color: #4a76a8;
+    color: white;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px; /* отступы слева и справа */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Название сайта */
+.site-title a {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.site-title a:hover {
+    text-decoration: underline;
+}
+
+/* Ссылки входа/профиля */
+.auth-links {
+    display: flex;
+    align-items: center;
+}
+
+.auth-links a {
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+/* Кнопка входа */
+.auth-links .btn-primary {
+    background-color: #4a76a8;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-links .btn-primary:hover {
+    background-color: #3b5c8b;
+}
+
+/* Основная раскладка после хедера */
+.main-layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Сайдбар */
+.sidebar {
+    width: 220px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: #2c2d2e;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.sidebar ul li a:hover {
+    color: #4a76a8;
+}
+
+/* Основной контент */
+.main-content {
+    flex: 1;
+    margin-left: 20px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Стили контейнера для страниц авторизации */
 .container {
     width: 100%;
     max-width: 500px;
@@ -15,6 +128,7 @@ body {
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовки */
 h1 {
     text-align: center;
     margin-bottom: 30px;
@@ -29,6 +143,7 @@ h3 {
     color: #2c2d2e;
 }
 
+/* Формы */
 .form-group {
     margin-bottom: 20px;
 }
@@ -56,6 +171,7 @@ h3 {
     outline: none;
 }
 
+/* Кнопки */
 .btn-primary {
     width: 100%;
     padding: 10px;
@@ -72,6 +188,7 @@ h3 {
     background-color: #3b5c8b;
 }
 
+/* Небольшие ссылки снизу */
 .mt-3 {
     text-align: center;
     margin-top: 20px;
@@ -85,64 +202,4 @@ h3 {
 
 .mt-3 a:hover {
     text-decoration: underline;
-}
-/* Общие стили для хедера */
-.site-header {
-    background-color: #4a76a8;  /* Цвет фона хедера */
-    color: white;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    border-radius: 8px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 10px 30px;
-    display: flex;             /* Добавляем флекс-контейнер */
-    justify-content: space-between; /* Распределение элементов по краям */
-    align-items: center;       /* Выравнивание по вертикали */
-}
-
-/* Стили для заголовка */
-.site-title a {
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.site-title a:hover {
-    text-decoration: underline;
-}
-
-/* Стили для блока ссылок авторизации */
-.auth-links {
-    display: flex;                /* Используем flex для выравнивания внутри */
-    align-items: center;          /* Выравнивание по вертикали */
-}
-
-/* Стиль для ссылок в auth-links */
-.auth-links a {
-    font-size: 16px;
-    color: white;
-    text-decoration: none;
-    margin-left: 15px; /* Расстояние между ссылками */
-}
-
-.auth-links a:hover {
-    text-decoration: underline;
-}
-
-/* Стили для кнопки входа */
-.auth-links .btn-primary {
-    background-color: #4a76a8;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.auth-links .btn-primary:hover {
-    background-color: #3b5c8b;
 }

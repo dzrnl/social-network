@@ -1,27 +1,6 @@
 @{
     ViewData["Title"] = "Лента новостей";
-    var currentUser = ViewBag.CurrentUser as SocialNetwork.Application.Models.User;
 }
-
-<header class="site-header d-flex justify-content-between align-items-center p-3 mb-4">
-    <div class="site-title">
-        <a href="/" class="text-white text-decoration-none fs-4">SocialNetwork</a>
-    </div>
-
-    <div class="auth-links d-flex align-items-center">
-        @if (currentUser != null)
-        {
-            <a href="/users/profile/@currentUser.Username" class="text-white me-3">
-                Моя страница (@currentUser.Username)
-            </a>
-        }
-        else
-        {
-            <a href="/auth/login" class="btn btn-primary me-2">Войти</a>
-        }
-    </div>
-</header>
-
 
 <div class="main-content">
     Пока ничего нет

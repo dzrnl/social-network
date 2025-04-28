@@ -1,14 +1,63 @@
+@{
+    var title = ViewData["Title"]?.ToString();
+    var currentUser = ViewBag.CurrentUser as SocialNetwork.Application.Models.User;
+}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@title</title>
     <link href="~/css/styles.css" rel="stylesheet" />
 </head>
 <body>
+@if (!(title == null ||
+       title.Contains("Вход в систему") ||
+       title.Contains("Регистрация")))
+{
+    <header class="site-header">
+        <div class="header-container">
+            <div class="site-title">
+                <a href="/">SocialNetwork</a>
+            </div>
+
+            <div class="auth-links">
+                @if (currentUser != null)
+                {
+                    <a href="/users/profile/@currentUser.Username">
+                        Моя страница (@currentUser.Username)
+                    </a>
+                }
+                else
+                {
+                    <a href="/auth/login" class="btn btn-primary">Войти</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <nav class="sidebar">
+            <ul>
+                @if (currentUser != null)
+                {
+                    <li><a href="/users/profile/@currentUser.Username">Профиль</a></li>
+                }
+                <li><a href="/feed/feed">Новости</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+}
+else
+{
     <div class="container">
         @RenderBody()
     </div>
+}
 </body>
 </html>
