@@ -2,17 +2,22 @@ using SocialNetwork.Application.Contracts.Commands.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Services;
 using SocialNetwork.Presentation.Web.Models.Auth;
 using SocialNetwork.Infrastructure.Security;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
-public class AuthController : Controller
+public class AuthController : BaseController
 {
     private readonly IAuthService _authService;
     private readonly IOptions<TokenOptions> _tokenOptions;
 
-    public AuthController(IAuthService authService, IOptions<TokenOptions> tokenOptions)
+    public AuthController(
+        CurrentUserManager currentUserManager,
+        IAuthService authService,
+        IOptions<TokenOptions> tokenOptions)
+        : base(currentUserManager)
     {
         _authService = authService;
         _tokenOptions = tokenOptions;
@@ -21,6 +26,13 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Register()
     {
+        var currentUser = CurrentUserManager.CurrentUser;
+
+        if (currentUser != null)
+        {
+            return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
+        }
+
         return View();
     }
 
@@ -53,6 +65,13 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Login()
     {
+        var currentUser = CurrentUserManager.CurrentUser;
+
+        if (currentUser != null)
+        {
+            return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
+        }
+
         return View();
     }
 

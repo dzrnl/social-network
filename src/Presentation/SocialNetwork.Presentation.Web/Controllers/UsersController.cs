@@ -6,21 +6,19 @@ using SocialNetwork.Presentation.Web.Models.Users;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
-public class UsersController : Controller
+public class UsersController : BaseController
 {
     private readonly IUserService _userService;
-    private readonly CurrentUserManager _currentUserManager;
 
-    public UsersController(IUserService userService, CurrentUserManager currentUserManager)
+    public UsersController(CurrentUserManager currentUserManager, IUserService userService) : base(currentUserManager)
     {
         _userService = userService;
-        _currentUserManager = currentUserManager;
     }
 
     [HttpGet("[controller]/[action]/{username}")]
     public async Task<IActionResult> Profile(string username)
     {
-        var currentUser = _currentUserManager.CurrentUser;
+        var currentUser = CurrentUserManager.CurrentUser;
 
         if (currentUser?.Id == null)
         {
@@ -37,8 +35,6 @@ public class UsersController : Controller
         var user = ((GetUserCommand.Response.Success)response).User;
 
         var userModel = UserModel.ToViewModel(user);
-        
-        ViewBag.CurrentUser = currentUser;
 
         if (currentUser.Username != user.Username)
         {
@@ -51,7 +47,7 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<IActionResult> ChangeUserName(ChangeUserNameModel model)
     {
-        var currentUserId = _currentUserManager.CurrentUser?.Id;
+        var currentUserId = CurrentUserManager.CurrentUser?.Id;
 
         if (!currentUserId.HasValue)
         {
@@ -71,7 +67,7 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteUser()
     {
-        var currentUserId = _currentUserManager.CurrentUser?.Id;
+        var currentUserId = CurrentUserManager.CurrentUser?.Id;
 
         if (!currentUserId.HasValue)
         {

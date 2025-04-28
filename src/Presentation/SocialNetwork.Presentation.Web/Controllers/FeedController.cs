@@ -3,20 +3,13 @@ using SocialNetwork.Application.Services;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
-public class FeedController : Controller
+public class FeedController : BaseController
 {
-    private readonly CurrentUserManager _currentUserManager;
-
-    public FeedController(CurrentUserManager currentUserManager)
-    {
-        _currentUserManager = currentUserManager;
-    }
+    public FeedController(CurrentUserManager currentUserManager) : base(currentUserManager) { }
 
     [HttpGet]
     public IActionResult Feed()
     {
-        ViewBag.CurrentUser = _currentUserManager.CurrentUser;
-
         return View();
     }
 }
