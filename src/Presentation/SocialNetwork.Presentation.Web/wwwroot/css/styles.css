@@ -7,7 +7,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 360px;
+    max-width: 500px;
     margin: 80px auto;
     padding: 40px 30px;
     background-color: #ffffff;
@@ -86,7 +86,6 @@ h3 {
 .mt-3 a:hover {
     text-decoration: underline;
 }
-
 /* Общие стили для хедера */
 .site-header {
     background-color: #4a76a8;  /* Цвет фона хедера */
@@ -95,6 +94,9 @@ h3 {
     border-radius: 8px;
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
     padding: 10px 30px;
+    display: flex;             /* Добавляем флекс-контейнер */
+    justify-content: space-between; /* Распределение элементов по краям */
+    align-items: center;       /* Выравнивание по вертикали */
 }
 
 /* Стили для заголовка */
@@ -113,9 +115,8 @@ h3 {
 
 /* Стили для блока ссылок авторизации */
 .auth-links {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    display: flex;                /* Используем flex для выравнивания внутри */
+    align-items: center;          /* Выравнивание по вертикали */
 }
 
 /* Стиль для ссылок в auth-links */
