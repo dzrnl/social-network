@@ -9,6 +9,8 @@ public static class GetUserCommand
         private Request() { }
 
         public sealed record ById(long Id) : Request;
+        
+        public sealed record ByUsername(string Username) : Request;
     }
 
     public abstract record Response

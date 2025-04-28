@@ -67,6 +67,25 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<GetUserCommand.Response> GetUserByUsername(GetUserCommand.Request.ByUsername request)
+    {
+        try
+        {
+            var user = await _userRepository.FindByUsername(request.Username);
+
+            if (user is null)
+            {
+                return new GetUserCommand.Response.NotFound();
+            }
+
+            return new GetUserCommand.Response.Success(user);
+        }
+        catch (Exception)
+        {
+            return new GetUserCommand.Response.Failure("Unexpected error while fetching user");
+        }
+    }
+
     public async Task<ChangeUserNameCommand.Response> ChangeUserName(ChangeUserNameCommand.Request request)
     {
         if (UserValidation.ValidateName(request.NewName) is { } validationNameError)
