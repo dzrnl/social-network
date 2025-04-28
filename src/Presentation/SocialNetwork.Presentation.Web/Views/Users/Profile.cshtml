@@ -6,10 +6,7 @@
 
 <h1>Профиль пользователя</h1>
 
-<div>
-    <p><strong>Имя:</strong> @Model.Name</p>
-    <p><strong>Имя пользователя:</strong> @Model.Username</p>
-</div>
+@await Html.PartialAsync("ProfileInfo", Model)
 
 <h3>Изменить имя</h3>
 

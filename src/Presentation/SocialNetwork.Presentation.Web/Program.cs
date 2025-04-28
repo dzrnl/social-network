@@ -50,7 +50,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Users}/{action=Profile}");
+            pattern: "{controller=Feed}/{action=Feed}");
 
         app.Run();
     }

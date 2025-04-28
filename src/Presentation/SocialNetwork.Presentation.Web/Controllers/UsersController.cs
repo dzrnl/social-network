@@ -17,17 +17,17 @@ public class UsersController : Controller
         _currentUserManager = currentUserManager;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Profile()
+    [HttpGet("[controller]/[action]/{username}")]
+    public async Task<IActionResult> Profile(string username)
     {
-        var currentUserId = _currentUserManager.CurrentUser?.Id;
+        var currentUser = _currentUserManager.CurrentUser;
 
-        if (!currentUserId.HasValue)
+        if (currentUser?.Id == null)
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var response = await _userService.GetUserById(new(currentUserId.Value));
+        var response = await _userService.GetUserByUsername(new(username));
 
         if (response is GetUserCommand.Response.NotFound)
         {
@@ -37,10 +37,15 @@ public class UsersController : Controller
         var user = ((GetUserCommand.Response.Success)response).User;
 
         var userModel = UserModel.ToViewModel(user);
-        
+
+        if (currentUser.Username != user.Username)
+        {
+            return View("ProfileView", userModel);
+        }
+
         return View(userModel);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ChangeUserName(ChangeUserNameModel model)
     {

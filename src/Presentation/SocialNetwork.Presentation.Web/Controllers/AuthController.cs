@@ -87,7 +87,7 @@ public class AuthController : Controller
 
         HttpContext.Response.Cookies.Append(cookieName, token);
 
-        return RedirectToAction("Profile", "Users");
+        return RedirectToAction("Feed", "Feed");
     }
 
     [HttpPost]
