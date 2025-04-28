@@ -63,7 +63,7 @@ public class UsersController : Controller
             return StatusCode(500, failure.Message);
         }
 
-        return RedirectToAction("Profile");
+        return RedirectToAction("Feed", "Feed"); // TODO
     }
 
     [HttpPost]

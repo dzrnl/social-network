@@ -1,63 +1,147 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #e7e8ec;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
 .container {
     width: 100%;
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 40px 30px;
+    background-color: #ffffff;
     border-radius: 8px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #2c2d2e;
 }
 
-label {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
-    display: block;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-    width: 100%;
-    padding: 10px;
+h3 {
+    margin-top: 30px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 20px;
+    color: #2c2d2e;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
     font-size: 14px;
+    color: #6a6a6a;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #d3d9de;
+    border-radius: 6px;
+    background-color: #f5f6f7;
     box-sizing: border-box;
 }
 
-button {
+.form-control:focus {
+    border-color: #4a76a8;
+    background-color: #ffffff;
+    outline: none;
+}
+
+.btn-primary {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
-    color: white;
+    background-color: #4a76a8;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 16px;
+    color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+.btn-primary:hover {
+    background-color: #3b5c8b;
 }
 
-.text-danger {
-    color: #dc3545;
+.mt-3 {
+    text-align: center;
+    margin-top: 20px;
     font-size: 14px;
-    margin-top: -10px;
-    margin-bottom: 10px;
+}
+
+.mt-3 a {
+    color: #4a76a8;
+    text-decoration: none;
+}
+
+.mt-3 a:hover {
+    text-decoration: underline;
+}
+
+/* Общие стили для хедера */
+.site-header {
+    background-color: #4a76a8;  /* Цвет фона хедера */
+    color: white;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    border-radius: 8px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 10px 30px;
+}
+
+/* Стили для заголовка */
+.site-title a {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.site-title a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для блока ссылок авторизации */
+.auth-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Стиль для ссылок в auth-links */
+.auth-links a {
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+    margin-left: 15px; /* Расстояние между ссылками */
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для кнопки входа */
+.auth-links .btn-primary {
+    background-color: #4a76a8;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-links .btn-primary:hover {
+    background-color: #3b5c8b;
 }
