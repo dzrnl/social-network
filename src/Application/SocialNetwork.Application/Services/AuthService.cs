@@ -31,6 +31,11 @@ public class AuthService : IAuthService
         {
             return new RegisterUserCommand.Response.InvalidRequest(validationNameError);
         }
+
+        if (UserValidation.ValidatePassword(request.Password) is { } validationPasswordError)
+        {
+            return new RegisterUserCommand.Response.InvalidRequest(validationPasswordError);
+        }
         
         var hashedPassword = _passwordHasher.GenerateHash(request.Password);
 

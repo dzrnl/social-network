@@ -1,78 +1,115 @@
+using SocialNetwork.Application.Contracts.Commands.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Services;
+using SocialNetwork.Presentation.Web.Models.Auth;
 using SocialNetwork.Infrastructure.Security;
-using SocialNetwork.Presentation.Web.Contracts;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly IAuthService _authService;
     private readonly IOptions<TokenOptions> _tokenOptions;
 
-    public AuthController(IAuthService authService, IOptions<TokenOptions> tokenOptions)
+    public AuthController(
+        CurrentUserManager currentUserManager,
+        IAuthService authService,
+        IOptions<TokenOptions> tokenOptions)
+        : base(currentUserManager)
     {
         _authService = authService;
         _tokenOptions = tokenOptions;
     }
 
-    [HttpPost("register")]
-    public async Task<ActionResult> Register(RegisterUserRequest request)
+    [HttpGet("/register")]
+    public IActionResult Register()
     {
-        var response = await _authService.Register(new(request.Username, request.Password, request.Name));
+        if (CurrentUser != null)
+        {
+            return RedirectToAction("Profile", "Profile", new { username = CurrentUser.Username });
+        }
+
+        return View();
+    }
+
+    [HttpPost("/register")]
+    public async Task<IActionResult> Register(RegisterModel model)
+    {
+        var response = await _authService.Register(new(model.Username, model.Password, model.Name));
 
         if (response is RegisterUserCommand.Response.InvalidRequest invalidRequest)
         {
-            return BadRequest(invalidRequest.Message);
+            ModelState.AddModelError(string.Empty, invalidRequest.Message);
+            return View(model);
         }
 
         if (response is RegisterUserCommand.Response.UserAlreadyExists userAlreadyExists)
         {
-            return BadRequest(userAlreadyExists.Message);
+            ModelState.AddModelError(string.Empty, userAlreadyExists.Message);
+            return View(model);
         }
 
         if (response is RegisterUserCommand.Response.Failure failure)
         {
-            return StatusCode(500, failure.Message);
+            return UnprocessableEntity(failure.Message);
         }
 
-        var success = (RegisterUserCommand.Response.Success)response;
-
-        return Ok(success.Id);
+        return RedirectToAction("Login");
     }
 
-    [HttpPost("login")]
-    public async Task<ActionResult> Login(LoginUserRequest request)
+    [HttpGet("/login")]
+    public IActionResult Login()
     {
-        var response = await _authService.Login(new(request.Username, request.Password));
-        
-        if (response is LoginUserCommand.Response.NotFound)
+        if (CurrentUser != null)
         {
-            return NotFound();
+            return RedirectToAction("Profile", "Profile", new { username = CurrentUser.Username });
         }
-        
+
+        return View();
+    }
+
+    [HttpPost("/login")]
+    public async Task<IActionResult> Login(LoginModel model)
+    {
+        var response = await _authService.Login(new(model.Username, model.Password));
+
+        if (response is LoginUserCommand.Response.NotFound notFound)
+        {
+            ModelState.AddModelError(string.Empty, notFound.Message);
+            return View(model);
+        }
+
         if (response is LoginUserCommand.Response.InvalidCredentials invalidCredentials)
         {
-            return Unauthorized(invalidCredentials.Message);
+            ModelState.AddModelError(string.Empty, invalidCredentials.Message);
+            return View(model);
         }
 
         if (response is LoginUserCommand.Response.Failure failure)
         {
-            return StatusCode(500, failure.Message);
+            return UnprocessableEntity(failure.Message);
         }
-        
+
         var success = (LoginUserCommand.Response.Success)response;
 
         var token = success.Token;
-        
+
         var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
         HttpContext.Response.Cookies.Append(cookieName, token);
 
-        return Ok();
+        return Redirect("/");
+    }
+
+    [HttpPost("/logout")]
+    public IActionResult Logout()
+    {
+        var cookieName = _tokenOptions.Value.AccessTokenCookieName;
+
+        HttpContext.Response.Cookies.Delete(cookieName);
+
+        return RedirectToAction("Login");
     }
 }

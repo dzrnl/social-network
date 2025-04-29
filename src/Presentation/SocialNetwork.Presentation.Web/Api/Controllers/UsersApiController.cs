@@ -3,27 +3,27 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
-using SocialNetwork.Presentation.Web.Contracts;
+using SocialNetwork.Presentation.Web.Models.Users;
 
-namespace SocialNetwork.Presentation.Web.Controllers;
+namespace SocialNetwork.Presentation.Web.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class UsersController : ControllerBase
+[Route("api/users")]
+public class UsersApiController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly CurrentUserManager _currentUserManager;
 
-    public UsersController(IUserService userService, CurrentUserManager userManager)
+    public UsersApiController(IUserService userService, CurrentUserManager userManager)
     {
         _userService = userService;
         _currentUserManager = userManager;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] GetUsersRequest request)
+    public async Task<ActionResult<List<UserModel>>> GetUsers([FromQuery] GetUsersModel model)
     {
-        var response = await _userService.GetUsers(new(request.Page, request.PageSize));
+        var response = await _userService.GetUsers(new(model.Page, model.PageSize));
 
         if (response is GetUsersCommand.Response.InvalidRequest invalidRequest)
         {
@@ -41,7 +41,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<UserResponse>> GetUser(long id)
+    public async Task<ActionResult<UserModel>> GetUser(long id)
     {
         var response = await _userService.GetUserById(new(id));
 
@@ -57,21 +57,21 @@ public class UsersController : ControllerBase
 
         var success = (GetUserCommand.Response.Success)response;
 
-        var userResponse = UserResponse.ToResponse(success.User);
+        var userResponse = UserModel.ToViewModel(success.User);
 
         return Ok(userResponse);
     }
 
     [HttpPatch("{id:long}")]
     [Authorize]
-    public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameRequest request)
+    public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameModel model)
     {
         if (_currentUserManager.CurrentUser?.Id != id)
         {
             return Forbid();
         }
 
-        var response = await _userService.ChangeUserName(new(id, request.NewName));
+        var response = await _userService.ChangeUserName(new(id, model.NewName));
 
         if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
         {

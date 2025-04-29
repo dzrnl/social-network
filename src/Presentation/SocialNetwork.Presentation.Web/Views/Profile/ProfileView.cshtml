@@ -1,0 +1,7 @@
+@model SocialNetwork.Presentation.Web.Models.Users.UserModel
+
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+@await Html.PartialAsync("ProfileInfo", Model)
