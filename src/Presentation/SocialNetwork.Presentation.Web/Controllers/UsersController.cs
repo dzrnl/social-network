@@ -15,7 +15,7 @@ public class UsersController : BaseController
         _userService = userService;
     }
 
-    [HttpGet("[controller]/[action]/{username}")]
+    [HttpGet("/{username}")]
     public async Task<IActionResult> Profile(string username)
     {
         var currentUser = CurrentUserManager.CurrentUser;
@@ -44,27 +44,27 @@ public class UsersController : BaseController
         return View(userModel);
     }
 
-    [HttpPost]
+    [HttpPost("/change-username")]
     public async Task<IActionResult> ChangeUserName(ChangeUserNameModel model)
     {
-        var currentUserId = CurrentUserManager.CurrentUser?.Id;
+        var currentUser = CurrentUserManager.CurrentUser;
 
-        if (!currentUserId.HasValue)
+        if (currentUser == null)
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var response = await _userService.ChangeUserName(new(currentUserId.Value, model.NewName));
+        var response = await _userService.ChangeUserName(new(currentUser.Id, model.NewName));
 
         if (response is ChangeUserNameCommand.Response.Failure failure)
         {
             return StatusCode(500, failure.Message);
         }
 
-        return RedirectToAction("Feed", "Feed"); // TODO
+        return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
     }
 
-    [HttpPost]
+    [HttpPost("/delete-account")]
     public async Task<IActionResult> DeleteUser()
     {
         var currentUserId = CurrentUserManager.CurrentUser?.Id;
@@ -81,6 +81,6 @@ public class UsersController : BaseController
             return StatusCode(500, failure.Message);
         }
 
-        return RedirectToAction("Logout", "Auth");
+        return Redirect("/");
     }
 }

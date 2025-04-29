@@ -48,9 +48,11 @@ public class Program
 
         app.MapControllers();
 
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Feed}/{action=Feed}");
+        app.MapGet("/", context =>
+        {
+            context.Response.Redirect("/feed");
+            return Task.CompletedTask;
+        });
 
         app.Run();
     }

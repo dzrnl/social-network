@@ -23,7 +23,7 @@ public class AuthController : BaseController
         _tokenOptions = tokenOptions;
     }
 
-    [HttpGet]
+    [HttpGet("/register")]
     public IActionResult Register()
     {
         var currentUser = CurrentUserManager.CurrentUser;
@@ -36,7 +36,7 @@ public class AuthController : BaseController
         return View();
     }
 
-    [HttpPost]
+    [HttpPost("/register")]
     public async Task<IActionResult> Register(RegisterModel model)
     {
         var response = await _authService.Register(new(model.Username, model.Password, model.Name));
@@ -62,7 +62,7 @@ public class AuthController : BaseController
         return RedirectToAction("Login");
     }
 
-    [HttpGet]
+    [HttpGet("/login")]
     public IActionResult Login()
     {
         var currentUser = CurrentUserManager.CurrentUser;
@@ -75,7 +75,7 @@ public class AuthController : BaseController
         return View();
     }
 
-    [HttpPost]
+    [HttpPost("/login")]
     public async Task<IActionResult> Login(LoginModel model)
     {
         var response = await _authService.Login(new(model.Username, model.Password));
@@ -108,14 +108,14 @@ public class AuthController : BaseController
 
         return RedirectToAction("Feed", "Feed");
     }
-
-    [HttpPost]
+    
+    [HttpPost("/logout")]
     public IActionResult Logout()
     {
         var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
         HttpContext.Response.Cookies.Delete(cookieName);
 
-        return RedirectToAction("Login", "Auth");
+        return RedirectToAction("Login");
     }
 }

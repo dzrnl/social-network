@@ -7,7 +7,7 @@ public class FeedController : BaseController
 {
     public FeedController(CurrentUserManager currentUserManager) : base(currentUserManager) { }
 
-    [HttpGet]
+    [HttpGet("/feed")]
     public IActionResult Feed()
     {
         return View();
