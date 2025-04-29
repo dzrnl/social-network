@@ -1,21 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Services;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
 public abstract class BaseController : Controller
 {
-    protected readonly CurrentUserManager CurrentUserManager;
+    private readonly CurrentUserManager _currentUserManager;
 
     protected BaseController(CurrentUserManager currentUserManager)
     {
-        CurrentUserManager = currentUserManager;
+        _currentUserManager = currentUserManager;
     }
+    
+    protected User? CurrentUser => _currentUserManager.CurrentUser;
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        ViewData["CurrentUser"] = CurrentUserManager.CurrentUser;
+        ViewData["CurrentUser"] = _currentUserManager.CurrentUser;
         base.OnActionExecuting(context);
     }
 }

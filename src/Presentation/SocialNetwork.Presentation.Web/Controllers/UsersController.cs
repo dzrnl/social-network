@@ -18,9 +18,7 @@ public class UsersController : BaseController
     [HttpGet("/{username}")]
     public async Task<IActionResult> Profile(string username)
     {
-        var currentUser = CurrentUserManager.CurrentUser;
-
-        if (currentUser?.Id == null)
+        if (CurrentUser == null)
         {
             return RedirectToAction("Login", "Auth");
         }
@@ -36,7 +34,7 @@ public class UsersController : BaseController
 
         var userModel = UserModel.ToViewModel(user);
 
-        if (currentUser.Username != user.Username)
+        if (CurrentUser.Username != user.Username)
         {
             return View("ProfileView", userModel);
         }
@@ -47,34 +45,30 @@ public class UsersController : BaseController
     [HttpPost("/change-username")]
     public async Task<IActionResult> ChangeUserName(ChangeUserNameModel model)
     {
-        var currentUser = CurrentUserManager.CurrentUser;
-
-        if (currentUser == null)
+        if (CurrentUser == null)
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var response = await _userService.ChangeUserName(new(currentUser.Id, model.NewName));
+        var response = await _userService.ChangeUserName(new(CurrentUser.Id, model.NewName));
 
         if (response is ChangeUserNameCommand.Response.Failure failure)
         {
             return StatusCode(500, failure.Message);
         }
 
-        return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
+        return RedirectToAction("Profile", "Users", new { username = CurrentUser.Username });
     }
 
     [HttpPost("/delete-account")]
     public async Task<IActionResult> DeleteUser()
     {
-        var currentUserId = CurrentUserManager.CurrentUser?.Id;
-
-        if (!currentUserId.HasValue)
+        if (CurrentUser == null)
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var response = await _userService.DeleteUser(new(currentUserId.Value));
+        var response = await _userService.DeleteUser(new(CurrentUser.Id));
 
         if (response is DeleteUserCommand.Response.Failure failure)
         {

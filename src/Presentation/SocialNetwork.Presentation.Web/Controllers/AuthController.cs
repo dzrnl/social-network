@@ -26,11 +26,9 @@ public class AuthController : BaseController
     [HttpGet("/register")]
     public IActionResult Register()
     {
-        var currentUser = CurrentUserManager.CurrentUser;
-
-        if (currentUser != null)
+        if (CurrentUser != null)
         {
-            return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
+            return RedirectToAction("Profile", "Users", new { username = CurrentUser.Username });
         }
 
         return View();
@@ -65,11 +63,9 @@ public class AuthController : BaseController
     [HttpGet("/login")]
     public IActionResult Login()
     {
-        var currentUser = CurrentUserManager.CurrentUser;
-
-        if (currentUser != null)
+        if (CurrentUser != null)
         {
-            return RedirectToAction("Profile", "Users", new { username = currentUser.Username });
+            return RedirectToAction("Profile", "Users", new { username = CurrentUser.Username });
         }
 
         return View();
