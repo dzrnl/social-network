@@ -18,11 +18,6 @@ public class ProfileController : BaseController
     [HttpGet("/{username}")]
     public async Task<IActionResult> Profile(string username)
     {
-        if (CurrentUser == null)
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-
         var response = await _userService.GetUserByUsername(new(username));
 
         if (response is GetUserCommand.Response.NotFound)
@@ -34,7 +29,7 @@ public class ProfileController : BaseController
 
         var userModel = UserModel.ToViewModel(user);
 
-        if (CurrentUser.Username != user.Username)
+        if (CurrentUser?.Username != user.Username)
         {
             return View("ProfileView", userModel);
         }

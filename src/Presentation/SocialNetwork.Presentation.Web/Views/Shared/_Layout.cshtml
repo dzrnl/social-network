@@ -40,20 +40,24 @@
     <div class="main-layout">
         <nav class="sidebar">
             <ul>
+                <li><a href="/search">Поиск</a></li>
                 @if (currentUser != null)
                 {
                     <li><a href="/@currentUser.Username">Профиль</a></li>
                 }
                 <li><a href="/feed">Новости</a></li>
-                <li><a href="/search">Поиск</a></li>
                 @if (currentUser != null)
                 {
+                    <li><a href="/messages">Сообщения</a></li>
+                    <li><a href="/friends">Друзья</a></li>
                     <li><a href="/settings">Настройки</a></li>
                 }
             </ul>
         </nav>
 
         <main class="main-content">
+            <h1>@title</h1>
+            
             @RenderBody()
         </main>
     </div>
@@ -61,6 +65,8 @@
 else
 {
     <div class="container">
+        <h1>@title</h1>
+        
         @RenderBody()
     </div>
 }
