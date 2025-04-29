@@ -150,7 +150,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new(username, "pass", "OtherName"));
+        var response = await authService.Register(new(username, "password", "OtherName"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.UserAlreadyExists>(response);
 
@@ -175,7 +175,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new("username", "pass", "Name"));
+        var response = await authService.Register(new("username", "password", "Name"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.Failure>(response);
 
