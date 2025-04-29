@@ -11,6 +11,11 @@ public class MessagesController : BaseController
     [HttpGet]
     public IActionResult Messages()
     {
+        if (CurrentUser == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+        
         return View();
     }
 }

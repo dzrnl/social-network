@@ -11,6 +11,11 @@ public class FriendsController : BaseController
     [HttpGet]
     public IActionResult Friends()
     {
+        if (CurrentUser == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+        
         return View();
     }
 }

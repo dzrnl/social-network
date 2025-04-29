@@ -53,8 +53,7 @@ public class AuthController : BaseController
 
         if (response is RegisterUserCommand.Response.Failure failure)
         {
-            ModelState.AddModelError(string.Empty, failure.Message);
-            return View(model);
+            return UnprocessableEntity(failure.Message);
         }
 
         return RedirectToAction("Login");
@@ -90,8 +89,7 @@ public class AuthController : BaseController
 
         if (response is LoginUserCommand.Response.Failure failure)
         {
-            ModelState.AddModelError(string.Empty, failure.Message);
-            return View(model);
+            return UnprocessableEntity(failure.Message);
         }
 
         var success = (LoginUserCommand.Response.Success)response;

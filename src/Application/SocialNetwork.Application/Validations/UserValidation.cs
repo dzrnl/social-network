@@ -12,7 +12,11 @@ public static class UserValidation
         "login",
         "logout",
         "register",
-        "feed"
+        "search",
+        "feed",
+        "messages",
+        "friends",
+        "settings"
     ];
     
     public static string? ValidateUsername(string username)

@@ -38,6 +38,12 @@ public class SettingsController : BaseController
         }
 
         var response = await _userService.ChangeUserName(new(CurrentUser.Id, model.NewName));
+        
+        if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
+        {
+            ModelState.AddModelError(string.Empty, invalidRequest.Message);
+            return View("Settings");
+        }
 
         if (response is ChangeUserNameCommand.Response.Failure failure)
         {
