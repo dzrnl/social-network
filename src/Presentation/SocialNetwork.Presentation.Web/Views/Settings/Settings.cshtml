@@ -1,10 +1,6 @@
-@model SocialNetwork.Presentation.Web.Models.Users.UserModel
-
 @{
-    ViewData["Title"] = "Профиль";
+    ViewData["Title"] = "Настройки";
 }
-
-@await Html.PartialAsync("ProfileInfo", Model)
 
 <h3>Изменить имя</h3>
 
@@ -20,10 +16,4 @@
 
 <form method="post" asp-action="DeleteUser">
     <button type="submit" class="btn btn-primary">Удалить аккаунт</button>
-</form>
-
-<h3>Выход</h3>
-
-<form method="post" asp-controller="Auth" asp-action="Logout">
-    <button type="submit" class="btn btn-primary">Выйти</button>
 </form>

@@ -45,6 +45,11 @@
                     <li><a href="/@currentUser.Username">Профиль</a></li>
                 }
                 <li><a href="/feed">Новости</a></li>
+                <li><a href="/search">Поиск</a></li>
+                @if (currentUser != null)
+                {
+                    <li><a href="/settings">Настройки</a></li>
+                }
             </ul>
         </nav>
 

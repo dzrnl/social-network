@@ -28,7 +28,7 @@ public class AuthController : BaseController
     {
         if (CurrentUser != null)
         {
-            return RedirectToAction("Profile", "Users", new { username = CurrentUser.Username });
+            return RedirectToAction("Profile", "Profile", new { username = CurrentUser.Username });
         }
 
         return View();
@@ -65,7 +65,7 @@ public class AuthController : BaseController
     {
         if (CurrentUser != null)
         {
-            return RedirectToAction("Profile", "Users", new { username = CurrentUser.Username });
+            return RedirectToAction("Profile", "Profile", new { username = CurrentUser.Username });
         }
 
         return View();
@@ -102,7 +102,7 @@ public class AuthController : BaseController
 
         HttpContext.Response.Cookies.Append(cookieName, token);
 
-        return RedirectToAction("Feed", "Feed");
+        return Redirect("/");
     }
     
     [HttpPost("/logout")]

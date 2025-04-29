@@ -1,0 +1,39 @@
+@model SocialNetwork.Presentation.Web.Models.Users.SearchUsersModel
+
+@{
+    ViewData["Title"] = "Поиск";
+    var prevPage = Model.Page > 1 ? Model.Page - 1 : 1;
+    var nextPage = Model.Page + 1;
+}
+
+<h2>Пользователи</h2>
+
+@if (Model.Users.Any())
+{
+    <ul>
+        @foreach (var user in Model.Users)
+        {
+            <li>
+                <a href="/@user.Username">
+                    <strong>@user.Username</strong>
+                </a>
+                <p>@user.Name</p>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Пользователи не найдены</p>
+}
+
+<div style="margin-top: 20px;">
+    @if (Model.Page > 1)
+    {
+        <a href="/search?page=@prevPage">← Назад</a>
+    }
+
+    <span style="margin: 0 10px;">Страница @Model.Page</span>
+
+    <a href="/search?page=@nextPage">Вперёд →</a>
+</div>
