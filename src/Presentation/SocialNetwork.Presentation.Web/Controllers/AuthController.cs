@@ -104,7 +104,7 @@ public class AuthController : BaseController
 
         return Redirect("/");
     }
-    
+
     [HttpPost("/logout")]
     public IActionResult Logout()
     {

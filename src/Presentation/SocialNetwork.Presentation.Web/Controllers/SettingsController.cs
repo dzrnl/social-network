@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
+using SocialNetwork.Infrastructure.Security;
 using SocialNetwork.Presentation.Web.Models.Users;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
@@ -10,10 +12,15 @@ namespace SocialNetwork.Presentation.Web.Controllers;
 public class SettingsController : BaseController
 {
     private readonly IUserService _userService;
+    private readonly IOptions<TokenOptions> _tokenOptions;
 
-    public SettingsController(CurrentUserManager currentUserManager, IUserService userService) : base(currentUserManager)
+    public SettingsController(
+        CurrentUserManager currentUserManager, 
+        IUserService userService,
+        IOptions<TokenOptions> tokenOptions) : base(currentUserManager)
     {
         _userService = userService;
+        _tokenOptions = tokenOptions;
     }
 
     [HttpGet]
@@ -54,7 +61,11 @@ public class SettingsController : BaseController
         {
             return UnprocessableEntity(failure.Message);
         }
+        
+        var cookieName = _tokenOptions.Value.AccessTokenCookieName;
 
-        return Redirect("/"); // TODO (del cookie)
+        HttpContext.Response.Cookies.Delete(cookieName);
+
+        return Redirect("/");
     }
 }
