@@ -22,6 +22,8 @@ public class SearchController : BaseController
     public async Task<IActionResult> Search(string? query, int page = 1)
     {
         GetUsersCommand.Response response;
+        
+        query = query?.Trim().ToLower();
 
         if (string.IsNullOrEmpty(query))
         {
@@ -30,7 +32,6 @@ public class SearchController : BaseController
         }
         else
         {
-            query = query.Trim().ToLower();
             response = await _userService.GetUsers(new GetUsersCommand.Request(page, PageSize, query));
         }
 

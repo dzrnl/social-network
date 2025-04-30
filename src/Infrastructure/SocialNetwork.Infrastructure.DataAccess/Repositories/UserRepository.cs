@@ -49,9 +49,9 @@ public class UserRepository : IUserRepository
         var usersQuery = _context.Users
             .AsNoTracking()
             .Where(u =>
-                u.Username.ToLower().StartsWith(query) ||
-                u.Name.ToLower().StartsWith(query) ||
-                u.Surname.ToLower().StartsWith(query));
+                EF.Functions.ILike(u.Username, query + "%") ||
+                EF.Functions.ILike(u.Name, query + "%") ||
+                EF.Functions.ILike(u.Surname, query + "%"));
 
         return await usersQuery
             .OrderBy(u => u.Id)

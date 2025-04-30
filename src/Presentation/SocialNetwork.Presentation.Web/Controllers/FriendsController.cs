@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Services;
+using SocialNetwork.Presentation.Web.Filters;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
+[AuthorizeUser]
 [Route("friends")]
 public class FriendsController : BaseController
 {
@@ -11,11 +13,6 @@ public class FriendsController : BaseController
     [HttpGet]
     public IActionResult Friends()
     {
-        if (CurrentUser == null)
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
         return View();
     }
 }

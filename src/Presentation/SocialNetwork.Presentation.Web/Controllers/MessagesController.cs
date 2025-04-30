@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Services;
+using SocialNetwork.Presentation.Web.Filters;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
+[AuthorizeUser]
 [Route("messages")]
 public class MessagesController : BaseController
 {
@@ -11,11 +13,6 @@ public class MessagesController : BaseController
     [HttpGet]
     public IActionResult Messages()
     {
-        if (CurrentUser == null)
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
         return View();
     }
 }

@@ -13,8 +13,10 @@ public abstract class BaseController : Controller
     {
         _currentUserManager = currentUserManager;
     }
-    
-    protected User? CurrentUser => _currentUserManager.CurrentUser;
+
+    public User? CurrentUser => _currentUserManager.CurrentUser;
+
+    public User AuthUser => _currentUserManager.CurrentUser!;
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
