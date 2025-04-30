@@ -23,7 +23,8 @@ public class UserRepository : IUserRepository
         {
             Username = query.Username,
             PasswordHash = query.PasswordHash,
-            Name = query.Name
+            Name = query.Name,
+            Surname = query.Surname
         };
 
         await _context.Users.AddAsync(userEntity);

@@ -17,8 +17,8 @@ public class UserServiceTests
 
         var expectedUsers = new List<User>
         {
-            new(1, "ivanov123", "Ivan"),
-            new(2, "petrov12", "Peter")
+            new(1, "ivanov123", "Ivan", "Ivanov"),
+            new(2, "petrov12", "Peter", "Petrov")
         };
 
         const int page = 1;
@@ -115,7 +115,7 @@ public class UserServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
 
         const long userId = 1;
-        User expectedUser = new(userId, "ivanov123", "Ivan");
+        User expectedUser = new(userId, "ivanov123", "Ivan", "Ivanov");
 
         mockedUserRepository
             .Setup(repo => repo.FindById(userId))

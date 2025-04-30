@@ -24,6 +24,10 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.Name)
             .IsRequired()
             .HasMaxLength(255);
+        
+        builder.Property(u => u.Surname)
+            .IsRequired()
+            .HasMaxLength(255);
 
         builder
             .HasMany(u => u.Friends)
