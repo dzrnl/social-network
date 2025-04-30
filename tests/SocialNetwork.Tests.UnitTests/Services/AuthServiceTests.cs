@@ -24,6 +24,7 @@ public class AuthServiceTests
         const string userUsername = "ivanov123";
         const string password = "password";
         const string userName = "Ivan";
+        const string surname = "Ivanov";
 
         const string passwordHash = "passwordHash";
 
@@ -37,12 +38,12 @@ public class AuthServiceTests
         mockedUserRepository
             .Setup(repo => repo.Add(It.Is<CreateUserQuery>(q =>
                 q.Username == userUsername && q.PasswordHash == passwordHash && q.Name == userName)))
-            .ReturnsAsync(new User(userId, userUsername, userName));
+            .ReturnsAsync(new User(userId, userUsername, userName, surname));
 
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new(userUsername, password, userName));
+        var response = await authService.Register(new(userUsername, password, userName, surname));
 
         var success = Assert.IsType<RegisterUserCommand.Response.Success>(response);
 
@@ -64,7 +65,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new("", "pass", "Name"));
+        var response = await authService.Register(new("", "pass", "Name", "Surname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
 
@@ -83,7 +84,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new("username", "pass", ""));
+        var response = await authService.Register(new("username", "pass", "", "Surname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
 
@@ -104,7 +105,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new(longUsername, "pass", "Name"));
+        var response = await authService.Register(new(longUsername, "pass", "Name", "Surname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
 
@@ -125,7 +126,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new("username", "pass", longName));
+        var response = await authService.Register(new("username", "pass", longName, "Surname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
 
@@ -145,12 +146,12 @@ public class AuthServiceTests
 
         mockedUserRepository
             .Setup(repo => repo.FindByUsername(username))
-            .ReturnsAsync(new User(1, username, "Name"));
+            .ReturnsAsync(new User(1, username, "Name", "Surname"));
 
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new(username, "password", "OtherName"));
+        var response = await authService.Register(new(username, "password", "OtherName", "OtherSurname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.UserAlreadyExists>(response);
 
@@ -175,7 +176,7 @@ public class AuthServiceTests
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
 
-        var response = await authService.Register(new("username", "password", "Name"));
+        var response = await authService.Register(new("username", "password", "Name", "Surname"));
 
         var failure = Assert.IsType<RegisterUserCommand.Response.Failure>(response);
 

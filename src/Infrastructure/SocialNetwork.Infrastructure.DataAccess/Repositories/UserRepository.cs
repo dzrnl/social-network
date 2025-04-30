@@ -23,7 +23,8 @@ public class UserRepository : IUserRepository
         {
             Username = query.Username,
             PasswordHash = query.PasswordHash,
-            Name = query.Name
+            Name = query.Name,
+            Surname = query.Surname
         };
 
         await _context.Users.AddAsync(userEntity);
@@ -39,6 +40,23 @@ public class UserRepository : IUserRepository
             .OrderBy(u => u.Id)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
+            .Select(u => u.ToDomain())
+            .ToListAsync();
+    }
+
+    public async Task<List<User>> SearchPaged(string query, PaginationQuery pagination)
+    {
+        var usersQuery = _context.Users
+            .AsNoTracking()
+            .Where(u =>
+                u.Username.ToLower().StartsWith(query) ||
+                u.Name.ToLower().StartsWith(query) ||
+                u.Surname.ToLower().StartsWith(query));
+
+        return await usersQuery
+            .OrderBy(u => u.Id)
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
             .Select(u => u.ToDomain())
             .ToListAsync();
     }

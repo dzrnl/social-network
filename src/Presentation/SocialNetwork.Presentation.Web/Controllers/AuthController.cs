@@ -37,7 +37,7 @@ public class AuthController : BaseController
     [HttpPost("/register")]
     public async Task<IActionResult> Register(RegisterModel model)
     {
-        var response = await _authService.Register(new(model.Username, model.Password, model.Name));
+        var response = await _authService.Register(new(model.Username, model.Password, model.Name, model.Surname));
 
         if (response is RegisterUserCommand.Response.InvalidRequest invalidRequest)
         {

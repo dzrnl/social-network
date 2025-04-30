@@ -4,6 +4,7 @@ public static class UserValidation
 {
     public const int MaxUsernameLength = 50;
     public const int MaxNameLength = 255;
+    public const int MaxSurnameLength = 255;
     public const int MinPasswordLength = 6;
     public const int MaxPasswordLength = 64;
     
@@ -49,6 +50,21 @@ public static class UserValidation
         if (name.Length > MaxNameLength)
         {
             return "Name is too long";
+        }
+
+        return null;
+    }
+    
+    public static string? ValidateSurname(string surname)
+    {
+        if (string.IsNullOrWhiteSpace(surname))
+        {
+            return "Surname cannot be empty";
+        }
+
+        if (surname.Length > MaxSurnameLength)
+        {
+            return "Surname is too long";
         }
 
         return null;

@@ -31,6 +31,11 @@ public class AuthService : IAuthService
         {
             return new RegisterUserCommand.Response.InvalidRequest(validationNameError);
         }
+        
+        if (UserValidation.ValidateSurname(request.Surname) is { } validationSurnameError)
+        {
+            return new RegisterUserCommand.Response.InvalidRequest(validationSurnameError);
+        }
 
         if (UserValidation.ValidatePassword(request.Password) is { } validationPasswordError)
         {
@@ -39,7 +44,7 @@ public class AuthService : IAuthService
         
         var hashedPassword = _passwordHasher.GenerateHash(request.Password);
 
-        var query = new CreateUserQuery(request.Username, hashedPassword, request.Name);
+        var query = new CreateUserQuery(request.Username, hashedPassword, request.Name, request.Surname);
 
         try
         {

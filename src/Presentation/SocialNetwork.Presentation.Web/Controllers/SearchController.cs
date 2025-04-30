@@ -10,7 +10,7 @@ namespace SocialNetwork.Presentation.Web.Controllers;
 public class SearchController : BaseController
 {
     private const int PageSize = 10;
-    
+
     private readonly IUserService _userService;
 
     public SearchController(CurrentUserManager currentUserManager, IUserService userService) : base(currentUserManager)
@@ -19,9 +19,20 @@ public class SearchController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Search(int page = 1)
+    public async Task<IActionResult> Search(string? query, int page = 1)
     {
-        var response = await _userService.GetUsers(new(page, PageSize));
+        GetUsersCommand.Response response;
+
+        if (string.IsNullOrEmpty(query))
+        {
+            query = null;
+            response = await _userService.GetUsers(new GetUsersCommand.Request(page, PageSize));
+        }
+        else
+        {
+            query = query.Trim().ToLower();
+            response = await _userService.GetUsers(new GetUsersCommand.Request(page, PageSize, query));
+        }
 
         var success = (GetUsersCommand.Response.Success)response;
 
@@ -29,7 +40,7 @@ public class SearchController : BaseController
             .Select(UserModel.ToViewModel)
             .ToList();
 
-        var searchResult = new SearchUsersModel(page, PageSize, users);
+        var searchResult = new SearchUsersModel(page, PageSize, users, query);
 
         return View(searchResult);
     }

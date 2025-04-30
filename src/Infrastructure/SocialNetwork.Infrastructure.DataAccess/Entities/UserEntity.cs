@@ -9,6 +9,8 @@ public class UserEntity
     public required string PasswordHash { get; set; }
 
     public required string Name { get; set; }
+    
+    public required string Surname { get; set; }
 
     public List<UserEntity> Friends { get; set; } = [];
 }

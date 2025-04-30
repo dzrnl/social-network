@@ -2,7 +2,7 @@ namespace SocialNetwork.Application.Contracts.Commands.Auth;
 
 public static class RegisterUserCommand
 {
-    public sealed record Request(string Username, string Password, string Name);
+    public sealed record Request(string Username, string Password, string Name, string Surname);
 
     public abstract record Response
     {
