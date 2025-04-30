@@ -1,7 +1,22 @@
-@model SocialNetwork.Presentation.Web.Models.Users.UserModel
+@model SocialNetwork.Presentation.Web.Models.Profile.ProfileViewModel
 
 @{
     ViewData["Title"] = "Профиль";
 }
 
-@await Html.PartialAsync("ProfileInfo", Model)
+@await Html.PartialAsync("ProfileInfo", Model.User)
+
+@if (!Model.IsFriend)
+{
+    <form method="post" action="/friends/add/@Model.User.Id">
+        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+        <button type="submit" class="btn btn-primary">Добавить в друзья</button>
+    </form>
+}
+else
+{
+    <form method="post" action="/friends/delete/@Model.User.Id">
+        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+        <button type="submit" class="btn btn-primary">Удалить из друзей</button>
+    </form>
+}

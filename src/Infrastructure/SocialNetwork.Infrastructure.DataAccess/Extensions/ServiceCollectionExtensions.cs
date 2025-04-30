@@ -11,13 +11,13 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructureDataAccess(this IServiceCollection collection,
         IConfiguration configuration)
     {
-        collection.AddDbContext<SocialNetworkDbContext>(
-            options => {
-                options.UseNpgsql(configuration.GetConnectionString(nameof(SocialNetworkDbContext)))
-                    .UseSnakeCaseNamingConvention();
-            });
+        collection.AddDbContext<SocialNetworkDbContext>(options => {
+            options.UseNpgsql(configuration.GetConnectionString(nameof(SocialNetworkDbContext)))
+                .UseSnakeCaseNamingConvention();
+        });
 
         collection.AddScoped<IUserRepository, UserRepository>();
+        collection.AddScoped<IFriendshipRepository, FriendshipRepository>();
 
         return collection;
     }

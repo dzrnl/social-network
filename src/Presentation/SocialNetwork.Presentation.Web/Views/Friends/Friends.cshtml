@@ -1,5 +1,31 @@
+@model SocialNetwork.Presentation.Web.Models.Friends.UserFriendsModel
+
 @{
     ViewData["Title"] = "Друзья";
 }
 
-Пока ничего нет
+@if (Model.Friends.Any())
+{
+    <ul class="user-list">
+        @foreach (var user in Model.Friends)
+        {
+            <li class="user-list-item">
+                <img src="/images/default-avatar.png" alt="Аватар" class="avatar-small"/>
+
+                <div>
+                    <a href="/@user.Username" class="user-link">
+                        <span class="user-name">@user.Name @user.Surname</span>
+                        <div class="user-username">@user.Username</div>
+                    </a>
+                    <div class="user-address">
+                        Город, улица
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Нет друзей</p>
+}
