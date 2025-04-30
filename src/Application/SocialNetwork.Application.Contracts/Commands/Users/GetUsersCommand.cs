@@ -4,7 +4,7 @@ namespace SocialNetwork.Application.Contracts.Commands.Users;
 
 public static class GetUsersCommand
 {
-    public sealed record Request(int Page, int PageSize);
+    public sealed record Request(int Page, int PageSize, string? Query = null);
 
     public abstract record Response
     {
@@ -13,7 +13,7 @@ public static class GetUsersCommand
         public sealed record Success(List<User> Users) : Response;
 
         public record Failure(string Message) : Response;
-        
+
         public sealed record InvalidRequest(string Message) : Failure(Message);
     }
 }

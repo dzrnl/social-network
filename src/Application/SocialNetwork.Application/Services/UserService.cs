@@ -2,6 +2,7 @@ using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
@@ -34,11 +35,20 @@ public class UserService : IUserService
             return new GetUsersCommand.Response.InvalidRequest("Page size is too large");
         }
 
-        var query = new PaginationQuery(request.Page, request.PageSize);
+        var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
 
         try
         {
-            var users = await _userRepository.FindPaged(query);
+            List<User> users;
+            
+            if (!string.IsNullOrWhiteSpace(request.Query))
+            {
+                users = await _userRepository.SearchPaged(request.Query, paginationQuery);
+            }
+            else
+            {
+                users = await _userRepository.FindPaged(paginationQuery);
+            }
 
             return new GetUsersCommand.Response.Success(users);
         }

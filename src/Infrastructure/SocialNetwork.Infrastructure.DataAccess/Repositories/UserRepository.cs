@@ -44,6 +44,23 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
+    public async Task<List<User>> SearchPaged(string query, PaginationQuery pagination)
+    {
+        var usersQuery = _context.Users
+            .AsNoTracking()
+            .Where(u =>
+                u.Username.ToLower().StartsWith(query) ||
+                u.Name.ToLower().StartsWith(query) ||
+                u.Surname.ToLower().StartsWith(query));
+
+        return await usersQuery
+            .OrderBy(u => u.Id)
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .Select(u => u.ToDomain())
+            .ToListAsync();
+    }
+
     public async Task<User?> FindById(long id)
     {
         var userEntity = await _context.Users

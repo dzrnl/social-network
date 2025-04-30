@@ -9,7 +9,7 @@
 <form method="get" asp-controller="Search" asp-action="Search"
       style="display: flex; justify-content: center; margin-bottom: 30px;">
     <input type="text" name="query" class="form-control" placeholder="Введите имя пользователя"
-           style="max-width: 300px; margin-right: 10px;"/>
+           style="max-width: 300px; margin-right: 10px;" value="@Model.Query"/>
     <button type="submit" class="btn-primary" style="width: auto; padding: 10px 20px;">Поиск</button>
 </form>
 
