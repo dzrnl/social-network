@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.Infrastructure.DataAccess.Extensions;
 using SocialNetwork.Infrastructure.Security.Extensions;
+using SocialNetwork.Presentation.Web.Hubs;
 using SocialNetwork.Presentation.Web.Middlewares;
 
 namespace SocialNetwork.Presentation.Web;
@@ -21,6 +22,8 @@ public class Program
         builder.Services.AddInfrastructureSecurity(builder.Configuration);
         
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
+        
+        builder.Services.AddSignalR();
 
         var app = builder.Build();
 
@@ -53,6 +56,8 @@ public class Program
             context.Response.Redirect("/feed");
             return Task.CompletedTask;
         });
+        
+        app.MapHub<ChatHub>("/chathub");
 
         app.Run();
     }

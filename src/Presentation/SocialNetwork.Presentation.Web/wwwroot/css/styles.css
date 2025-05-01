@@ -309,3 +309,33 @@ h3 {
 .pagination-placeholder {
     width: auto;
 }
+
+.chat-box {
+    height: 700px;
+    overflow-y: scroll;
+    padding: 15px;
+    border: 1px solid #d3d9de;
+    background-color: #f5f6f7;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.chat-message-wrapper {
+    width: 100%;
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.chat-message {
+    display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
+    padding: 8px 12px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.chat-message-wrapper.own-message {
+    justify-content: flex-end;
+}

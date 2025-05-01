@@ -1,5 +1,26 @@
 @{
     ViewData["Title"] = "Сообщения";
+    var currentUser = (SocialNetwork.Application.Models.User)ViewData["CurrentUser"]!;
 }
 
-Пока ничего нет
+<h1>Общий чат</h1>
+
+<div id="chatBox" class="chat-box">
+    <!-- Сообщения -->
+</div>
+
+<div class="form-group">
+    <input type="text" id="messageInput" class="form-control" placeholder="Введите сообщение..."/>
+</div>
+
+<button id="sendButton" class="btn-primary">Отправить</button>
+
+@section Scripts {
+    <script>
+        window.currentUserId = @currentUser.Id;
+        window.currentUserFullName = "@currentUser.Name @currentUser.Surname";
+    </script>
+
+    <script src="@("https://cdn.jsdelivr.net/npm/@microsoft/signalr@7.0.5/dist/browser/signalr.min.js")"></script>
+    <script src="~/js/chat.js"></script>
+}
