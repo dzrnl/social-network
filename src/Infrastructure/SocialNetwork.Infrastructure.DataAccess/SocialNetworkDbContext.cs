@@ -7,10 +7,16 @@ namespace SocialNetwork.Infrastructure.DataAccess;
 public class SocialNetworkDbContext(DbContextOptions<SocialNetworkDbContext> options) : DbContext(options)
 {
     public DbSet<UserEntity> Users { get; set; }
+    
+    public DbSet<MessageEntity> Messages { get; set; }
+    
+    public DbSet<DirectChatEntity> DirectChats { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        modelBuilder.ApplyConfiguration(new DirectChatConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
