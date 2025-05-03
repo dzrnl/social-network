@@ -37,6 +37,7 @@ public class MessageRepository : IMessageRepository
         var messages = await _context.Messages
             .AsNoTracking()
             .Include(m => m.Sender)
+            .OrderBy(m => m.SentAt)
             .ToListAsync();
 
         return messages.Select(m => m.ToDomain()).ToList();

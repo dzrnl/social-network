@@ -13,10 +13,23 @@ connection.on("ReceiveMessage", function (message) {
     const senderNameWrapper = document.createElement("div");
     senderNameWrapper.className = "sender-name-wrapper";
 
-    const senderName = document.createElement("a");
-    senderName.href = `/${message.sender.username}`;
-    senderName.className = "sender-name";
-    senderName.textContent = message.sender.name;
+    let senderName;
+
+    if (message.sender == null) {
+        senderName = document.createElement("span");
+        senderName.className = "sender-name";
+        senderName.textContent = "Deleted user";
+    } else if (message.sender.id === userId) {
+        senderName = document.createElement("span");
+        senderName.className = "sender-name";
+        senderName.textContent = "You";
+        wrapper.classList.add("own-message");
+    } else {
+        senderName = document.createElement("a");
+        senderName.href = `/${message.sender.username}`;
+        senderName.className = "sender-name";
+        senderName.textContent = message.sender.name;
+    }
 
     senderNameWrapper.appendChild(senderName);
 
@@ -29,28 +42,44 @@ connection.on("ReceiveMessage", function (message) {
     chatMessage.appendChild(senderNameWrapper);
     chatMessage.appendChild(msg);
 
-    if (message.sender.id === userId) { 
-        wrapper.classList.add("own-message");
-    }
-
     wrapper.appendChild(chatMessage);
     container.appendChild(wrapper);
 
-    container.scrollTop = container.scrollHeight;
+    scrollToBottom();
 });
 
 connection.start().catch(err => console.error(err.toString()));
 
-document.getElementById("sendButton").addEventListener("click", function (event) {
+function sendMessage() {
     const input = document.getElementById("messageInput");
     const content = input.value.trim();
-
-    if (content) {
+    
+    const message = input.value.trim();
+    if (message) {
         connection.invoke("SendMessage", userId, content)
             .catch(err => console.error(err.toString()));
-
-        input.value = "";
+        
+        input.value = ""; 
     }
+}
 
+document.getElementById("sendButton").addEventListener("click", function (event) {
     event.preventDefault();
+    sendMessage();
 });
+
+document.getElementById("messageInput").addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+});
+
+function scrollToBottom() {
+    const container = document.getElementById("chatBox");
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+window.addEventListener("load", scrollToBottom);

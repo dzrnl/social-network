@@ -10,13 +10,24 @@
 <div id="chatBox" class="chat-box">
     @foreach (var msg in Model.Messages)
     {
-        var isOwnMessage = msg.Sender!.Id == currentUser.Id;
+        var isOwnMessage = msg.Sender?.Id == currentUser.Id;
         var messageClass = isOwnMessage ? "chat-message-wrapper own-message" : "chat-message-wrapper";
 
         <div class="@messageClass">
             <div class="chat-message">
                 <div class="sender-name-wrapper">
-                    <a href="/@msg.Sender.Username" class="sender-name">@msg.Sender.Name</a>
+                    @if (msg.Sender == null)
+                    {
+                        <span class="sender-name">Deleted user</span>
+                    } 
+                    else if (isOwnMessage)
+                    {
+                        <span class="sender-name">You</span>
+                    }
+                    else
+                    {
+                        <a href="/@msg.Sender.Username" class="sender-name">@msg.Sender.Name</a>
+                    }
                 </div>
                 @msg.Content
             </div>
