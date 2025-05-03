@@ -10,10 +10,13 @@ public class SocialNetworkDbContext(DbContextOptions<SocialNetworkDbContext> opt
 
     public DbSet<MessageEntity> Messages { get; set; }
 
+    public DbSet<PostEntity> Posts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        modelBuilder.ApplyConfiguration(new PostConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
