@@ -76,12 +76,11 @@ public class FriendshipRepository : IFriendshipRepository
 
     public async Task<List<User>> FindFriends(long userId)
     {
-        return await _context.Users
+        var friends = await _context.Users
             .AsNoTracking()
-            .Include(u => u.Friends)
-            .Where(u => u.Id == userId)
-            .SelectMany(u => u.Friends)
-            .Select(u => u.ToDomain())
+            .Where(u => u.Friends.Any(f => f.Id == userId))
             .ToListAsync();
+        
+        return friends.Select(u => u.ToDomain()).ToList();
     }
 }

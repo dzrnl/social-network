@@ -35,13 +35,14 @@ public class UserRepository : IUserRepository
 
     public async Task<List<User>> FindPaged(PaginationQuery query)
     {
-        return await _context.Users
+        var users = await _context.Users
             .AsNoTracking()
             .OrderBy(u => u.Id)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(u => u.ToDomain())
             .ToListAsync();
+        
+        return users.Select(u => u.ToDomain()).ToList();
     }
 
     public async Task<List<User>> SearchPaged(string query, PaginationQuery pagination)
@@ -53,12 +54,13 @@ public class UserRepository : IUserRepository
                 EF.Functions.ILike(u.Name, query + "%") ||
                 EF.Functions.ILike(u.Surname, query + "%"));
 
-        return await usersQuery
+        var users = await usersQuery
             .OrderBy(u => u.Id)
             .Skip((pagination.Page - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
-            .Select(u => u.ToDomain())
             .ToListAsync();
+        
+        return users.Select(u => u.ToDomain()).ToList();
     }
 
     public async Task<User?> FindById(long id)

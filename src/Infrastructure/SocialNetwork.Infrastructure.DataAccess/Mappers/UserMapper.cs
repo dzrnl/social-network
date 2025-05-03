@@ -9,16 +9,4 @@ public static class UserMapper
     {
         return new User(userEntity.Id, userEntity.Username, userEntity.Name, userEntity.Surname);
     }
-
-    public static UserEntity ToEntity(this User user, string passwordHash)
-    {
-        return new UserEntity
-        {
-            Id = user.Id,
-            Username = user.Username,
-            PasswordHash = passwordHash,
-            Name = user.Name,
-            Surname = user.Surname
-        };
-    }
 }

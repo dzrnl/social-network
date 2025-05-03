@@ -323,6 +323,7 @@ h3 {
 .chat-message-wrapper {
     width: 100%;
     display: flex;
+    flex-direction: column;
     margin-bottom: 10px;
 }
 
@@ -334,8 +335,33 @@ h3 {
     background-color: #ffffff;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-top: 5px;
 }
 
 .chat-message-wrapper.own-message {
-    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.chat-message-wrapper:not(.own-message) {
+    align-items: flex-start;
+}
+
+.sender-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #4a76a8;
+    text-decoration: none;
+    margin-bottom: 3px;
+}
+
+.sender-name:hover {
+    text-decoration: underline;
+}
+
+.message-content {
+    font-size: 16px;
+}
+
+.sender-name-wrapper {
+    margin-bottom: 5px;
 }

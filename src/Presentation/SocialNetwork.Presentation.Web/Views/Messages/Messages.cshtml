@@ -1,3 +1,5 @@
+@model SocialNetwork.Presentation.Web.Models.Messages.ChatModel
+
 @{
     ViewData["Title"] = "Сообщения";
     var currentUser = (SocialNetwork.Application.Models.User)ViewData["CurrentUser"]!;
@@ -6,7 +8,20 @@
 <h1>Общий чат</h1>
 
 <div id="chatBox" class="chat-box">
-    <!-- Сообщения -->
+    @foreach (var msg in Model.Messages)
+    {
+        var isOwnMessage = msg.Sender!.Id == currentUser.Id;
+        var messageClass = isOwnMessage ? "chat-message-wrapper own-message" : "chat-message-wrapper";
+
+        <div class="@messageClass">
+            <div class="chat-message">
+                <div class="sender-name-wrapper">
+                    <a href="/@msg.Sender.Username" class="sender-name">@msg.Sender.Name</a>
+                </div>
+                @msg.Content
+            </div>
+        </div>
+    }
 </div>
 
 <div class="form-group">
@@ -18,7 +33,6 @@
 @section Scripts {
     <script>
         window.currentUserId = @currentUser.Id;
-        window.currentUserFullName = "@currentUser.Name @currentUser.Surname";
     </script>
 
     <script src="@("https://cdn.jsdelivr.net/npm/@microsoft/signalr@7.0.5/dist/browser/signalr.min.js")"></script>

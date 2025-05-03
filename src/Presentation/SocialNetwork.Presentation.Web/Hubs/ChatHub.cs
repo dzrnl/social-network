@@ -1,11 +1,31 @@
 using Microsoft.AspNetCore.SignalR;
+using SocialNetwork.Application.Contracts.Commands.Messages;
+using SocialNetwork.Application.Contracts.Services;
 
 namespace SocialNetwork.Presentation.Web.Hubs;
 
 public class ChatHub : Hub
 {
-    public async Task SendMessage(long userId, string username, string message)
+    private readonly IMessageService _messageService;
+    
+    public ChatHub(IMessageService messageService)
     {
-        await Clients.All.SendAsync("ReceiveMessage", userId, username, message);
+        _messageService = messageService;
+    }
+
+    public async Task SendMessage(long userId, string content)
+    {
+        var response = await _messageService.SendMessage(new(userId, content));
+
+        if (response is SendMessageCommand.Response.Failure)
+        {
+            return;
+        }
+        
+        var success = (SendMessageCommand.Response.Success)response;
+
+        var message = success.Message;
+        
+        await Clients.All.SendAsync("ReceiveMessage", message);
     }
 }

@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
 
         collection.AddScoped<IUserRepository, UserRepository>();
         collection.AddScoped<IFriendshipRepository, FriendshipRepository>();
+        collection.AddScoped<IMessageRepository, MessageRepository>();
 
         return collection;
     }
