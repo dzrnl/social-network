@@ -12,6 +12,8 @@ public static class RemoveFriendCommand
 
         public record Failure(string Message) : Response;
 
+        public sealed record UserNotFound() : Failure("User not found");
+
         public sealed record NotFriends() : Failure("Users are not friends");
     }
 }

@@ -53,13 +53,13 @@ connection.start().catch(err => console.error(err.toString()));
 function sendMessage() {
     const input = document.getElementById("messageInput");
     const content = input.value.trim();
-    
+
     const message = input.value.trim();
     if (message) {
         connection.invoke("SendMessage", userId, content)
             .catch(err => console.error(err.toString()));
-        
-        input.value = ""; 
+
+        input.value = "";
     }
 }
 
@@ -68,7 +68,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     sendMessage();
 });
 
-document.getElementById("messageInput").addEventListener("keydown", function(event) {
+document.getElementById("messageInput").addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         sendMessage();

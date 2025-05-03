@@ -11,9 +11,9 @@ public class LoginUserCommand
         public sealed record Success(string Token) : Response;
 
         public record Failure(string Message) : Response;
-        
+
         public sealed record NotFound() : Failure("User not found");
-        
+
         public sealed record InvalidCredentials() : Failure("Invalid username or password");
     }
 }

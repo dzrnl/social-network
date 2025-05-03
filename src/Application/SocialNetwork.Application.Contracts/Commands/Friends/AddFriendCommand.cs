@@ -11,11 +11,11 @@ public static class AddFriendCommand
         public sealed record Success : Response;
 
         public record Failure(string Message) : Response;
-        
-        public record InvalidRequest(string Message) : Failure(Message);
-        
-        public sealed record SelfFriendship() : InvalidRequest("Friendship with self is not permitted");
-        
+
+        public sealed record SelfFriendship() : Failure("Friendship with self is not permitted");
+
+        public sealed record UserNotFound() : Failure("User not found");
+
         public sealed record AlreadyFriends() : Failure("Users are already friends");
     }
 }

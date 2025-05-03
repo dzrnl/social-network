@@ -13,5 +13,9 @@ public static class SendMessageCommand
         public sealed record Success(Message Message) : Response;
 
         public record Failure(string Message) : Response;
+
+        public sealed record InvalidRequest(string Message) : Failure(Message);
+
+        public sealed record UserNotFound() : Failure("User not found");
     }
 }

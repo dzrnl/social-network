@@ -1,3 +1,4 @@
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
@@ -20,19 +21,9 @@ public class UserService : IUserService
 
     public async Task<GetUsersCommand.Response> GetUsers(GetUsersCommand.Request request)
     {
-        if (request.Page < 1)
+        if (PaginationValidation.Validate(request.Page, request.PageSize, MaxPageSize) is { } paginationError)
         {
-            return new GetUsersCommand.Response.InvalidRequest("Page number must be greater than or equal to 1");
-        }
-
-        if (request.PageSize < 1)
-        {
-            return new GetUsersCommand.Response.InvalidRequest("Page size must be greater than or equal to 1");
-        }
-
-        if (request.PageSize > MaxPageSize)
-        {
-            return new GetUsersCommand.Response.InvalidRequest("Page size is too large");
+            return new GetUsersCommand.Response.InvalidRequest(paginationError);
         }
 
         var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
@@ -40,7 +31,7 @@ public class UserService : IUserService
         try
         {
             List<User> users;
-            
+
             if (!string.IsNullOrWhiteSpace(request.Query))
             {
                 users = await _userRepository.SearchPaged(request.Query, paginationQuery);

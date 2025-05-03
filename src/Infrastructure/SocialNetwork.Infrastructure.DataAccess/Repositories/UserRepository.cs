@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Application.Abstractions.Dtos;
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Models;
@@ -41,7 +42,7 @@ public class UserRepository : IUserRepository
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();
-        
+
         return users.Select(u => u.ToDomain()).ToList();
     }
 
@@ -59,7 +60,7 @@ public class UserRepository : IUserRepository
             .Skip((pagination.Page - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
             .ToListAsync();
-        
+
         return users.Select(u => u.ToDomain()).ToList();
     }
 
@@ -79,6 +80,18 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Username == username);
 
         return userEntity?.ToDomain();
+    }
+
+    public async Task<bool> ExistsById(long id)
+    {
+        return await _context.Users
+            .AnyAsync(u => u.Id == id);
+    }
+
+    public async Task<bool> ExistsByUsername(string username)
+    {
+        return await _context.Users
+            .AnyAsync(u => u.Username == username);
     }
 
     public async Task<bool> ChangeName(ChangeUserNameQuery query)

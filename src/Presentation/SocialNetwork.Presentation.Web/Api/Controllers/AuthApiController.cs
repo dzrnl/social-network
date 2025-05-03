@@ -23,7 +23,8 @@ public class AuthApiController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterModel request)
     {
-        var response = await _authService.Register(new(request.Username, request.Password, request.Name, request.Surname));
+        var response = await _authService.Register(
+            new(request.Username, request.Password, request.Name, request.Surname));
 
         if (response is RegisterUserCommand.Response.InvalidRequest invalidRequest)
         {

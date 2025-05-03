@@ -1,4 +1,5 @@
 using Moq;
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
@@ -86,7 +87,7 @@ public class UserServiceTests
 
         var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
 
-        Assert.Equal("Page size is too large", failure.Message);
+        Assert.Equal($"Page size must not exceed {UserService.MaxPageSize}", failure.Message);
 
         mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
     }

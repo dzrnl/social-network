@@ -22,7 +22,7 @@ public class SearchController : BaseController
     public async Task<IActionResult> Search(string? query, int page = 1)
     {
         GetUsersCommand.Response response;
-        
+
         query = query?.Trim().ToLower();
 
         if (string.IsNullOrEmpty(query))

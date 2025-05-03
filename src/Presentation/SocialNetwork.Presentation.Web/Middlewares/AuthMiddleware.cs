@@ -25,7 +25,7 @@ public class AuthMiddleware
             if (int.TryParse(userIdClaim, out var userId))
             {
                 var user = await userRepository.FindById(userId);
-                
+
                 currentUserManager.CurrentUser = user;
             }
         }

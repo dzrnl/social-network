@@ -20,9 +20,9 @@ public class Program
         builder.Services.AddApplication();
         builder.Services.AddInfrastructureDataAccess(builder.Configuration);
         builder.Services.AddInfrastructureSecurity(builder.Configuration);
-        
+
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
-        
+
         builder.Services.AddSignalR();
 
         var app = builder.Build();
@@ -34,7 +34,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-        
+
         app.UseStaticFiles();
 
         app.UseCookiePolicy(new CookiePolicyOptions
@@ -51,12 +51,11 @@ public class Program
 
         app.MapControllers();
 
-        app.MapGet("/", context =>
-        {
+        app.MapGet("/", context => {
             context.Response.Redirect("/feed");
             return Task.CompletedTask;
         });
-        
+
         app.MapHub<ChatHub>("/chathub");
 
         app.Run();

@@ -145,8 +145,8 @@ public class AuthServiceTests
         const string username = "username";
 
         mockedUserRepository
-            .Setup(repo => repo.FindByUsername(username))
-            .ReturnsAsync(new User(1, username, "Name", "Surname"));
+            .Setup(repo => repo.ExistsByUsername(username))
+            .ReturnsAsync(true);
 
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
@@ -157,7 +157,7 @@ public class AuthServiceTests
 
         Assert.Equal("User with this username already exists", failure.Message);
 
-        mockedUserRepository.Verify(repo => repo.FindByUsername(username), Times.Once);
+        mockedUserRepository.Verify(repo => repo.ExistsByUsername(username), Times.Once);
 
         mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
     }
@@ -168,7 +168,7 @@ public class AuthServiceTests
         var mockedUserRepository = new Mock<IUserRepository>();
         var mockedPasswordHasher = new Mock<IPasswordHasher>();
         var mockedJwtProvider = new Mock<IJwtProvider>();
-        
+
         mockedUserRepository
             .Setup(repo => repo.Add(It.IsAny<CreateUserQuery>()))
             .ThrowsAsync(new Exception("Database error"));
@@ -196,7 +196,7 @@ public class AuthServiceTests
 
         const string passwordHash = "passwordHash";
         const string token = "token";
-        
+
         mockedUserRepository
             .Setup(repo => repo.FindCredentialsByUsername(userUsername))
             .ReturnsAsync(new UserCredentials(userId, userUsername, passwordHash));
@@ -218,13 +218,13 @@ public class AuthServiceTests
 
         Assert.Equal(token, success.Token);
 
-        mockedUserRepository.Verify(repo => 
+        mockedUserRepository.Verify(repo =>
             repo.FindCredentialsByUsername(userUsername), Times.Once);
-        
-        mockedPasswordHasher.Verify(hasher => 
+
+        mockedPasswordHasher.Verify(hasher =>
             hasher.VerifyHash(password, passwordHash), Times.Once);
-        
-        mockedJwtProvider.Verify(provider => 
+
+        mockedJwtProvider.Verify(provider =>
             provider.GenerateToken(userId), Times.Once);
     }
 
@@ -236,22 +236,22 @@ public class AuthServiceTests
         var mockedJwtProvider = new Mock<IJwtProvider>();
 
         const string userUsername = "ivanov123";
-        
+
         mockedUserRepository
             .Setup(repo => repo.FindCredentialsByUsername(userUsername))
             .ReturnsAsync((UserCredentials?)null);
-        
+
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
-        
+
         var response = await authService.Login(new(userUsername, "pass"));
-        
+
         Assert.IsType<LoginUserCommand.Response.NotFound>(response);
 
-        mockedUserRepository.Verify(repo => 
+        mockedUserRepository.Verify(repo =>
             repo.FindCredentialsByUsername(userUsername), Times.Once);
     }
-    
+
     [Fact]
     public async Task LoginUserTest_ShouldReturnFailure_WhenInvalidUsernameOrPassword()
     {
@@ -264,7 +264,7 @@ public class AuthServiceTests
         const string password = "password";
 
         const string passwordHash = "passwordHash";
-        
+
         mockedUserRepository
             .Setup(repo => repo.FindCredentialsByUsername(userUsername))
             .ReturnsAsync(new UserCredentials(userId, userUsername, passwordHash));
@@ -272,23 +272,23 @@ public class AuthServiceTests
         mockedPasswordHasher
             .Setup(hasher => hasher.VerifyHash(password, passwordHash))
             .Returns(false);
-        
+
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
-        
+
         var response = await authService.Login(new(userUsername, password));
-        
+
         var invalidCredentials = Assert.IsType<LoginUserCommand.Response.InvalidCredentials>(response);
-        
+
         Assert.Equal("Invalid username or password", invalidCredentials.Message);
 
-        mockedUserRepository.Verify(repo => 
+        mockedUserRepository.Verify(repo =>
             repo.FindCredentialsByUsername(userUsername), Times.Once);
-        
+
         mockedPasswordHasher.Verify(provider =>
             provider.VerifyHash(password, passwordHash), Times.Once);
     }
-    
+
     [Fact]
     public async Task LoginUserTest_ShouldReturnFailure_WhenRepositoryThrowsException()
     {
@@ -297,16 +297,16 @@ public class AuthServiceTests
         var mockedJwtProvider = new Mock<IJwtProvider>();
 
         const string username = "ivanov123";
-        
+
         mockedUserRepository
             .Setup(repo => repo.FindCredentialsByUsername(username))
             .ReturnsAsync((UserCredentials?)null);
-        
+
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
             mockedJwtProvider.Object);
-        
+
         var response = await authService.Login(new(username, "pass"));
-        
+
         Assert.IsType<LoginUserCommand.Response.NotFound>(response);
 
         mockedUserRepository.Verify(repo => repo.FindCredentialsByUsername(username), Times.Once);

@@ -8,9 +8,9 @@ public static class MessageMapper
     public static Message ToDomain(this MessageEntity messageEntity)
     {
         return new Message(
-            messageEntity.Id, 
-            messageEntity.Sender?.ToPreview(), 
-            messageEntity.Content, 
+            messageEntity.Id,
+            messageEntity.Sender?.ToPreview(),
+            messageEntity.Content,
             messageEntity.SentAt);
     }
 }

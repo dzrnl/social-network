@@ -1,4 +1,5 @@
 using SocialNetwork.Application.Abstractions.Dtos;
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Models;
 
@@ -9,16 +10,20 @@ public interface IUserRepository
     Task<User> Add(CreateUserQuery query);
 
     Task<List<User>> FindPaged(PaginationQuery query);
-    
+
     Task<List<User>> SearchPaged(string query, PaginationQuery pagination);
 
     Task<User?> FindById(long id);
-    
+
     Task<User?> FindByUsername(string username);
+    
+    Task<bool> ExistsById(long id);
+    
+    Task<bool> ExistsByUsername(string username);
 
     Task<bool> ChangeName(ChangeUserNameQuery query);
 
     Task<bool> Delete(long id);
-    
+
     Task<UserCredentials?> FindCredentialsByUsername(string username);
 }

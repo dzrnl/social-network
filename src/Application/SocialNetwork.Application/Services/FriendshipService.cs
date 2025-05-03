@@ -7,10 +7,12 @@ namespace SocialNetwork.Application.Services;
 public class FriendshipService : IFriendshipService
 {
     private readonly IFriendshipRepository _friendshipRepository;
+    private readonly IUserRepository _userRepository;
 
-    public FriendshipService(IFriendshipRepository friendshipRepository)
+    public FriendshipService(IFriendshipRepository friendshipRepository, IUserRepository userRepository)
     {
         _friendshipRepository = friendshipRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<AddFriendCommand.Response> AddFriend(AddFriendCommand.Request request)
@@ -22,6 +24,13 @@ public class FriendshipService : IFriendshipService
 
         try
         {
+            var bothUsersExist = await CheckBothUsersExist(request.UserId, request.FriendId);
+
+            if (!bothUsersExist)
+            {
+                return new AddFriendCommand.Response.UserNotFound();
+            }
+
             var added = await _friendshipRepository.AddFriend(request.UserId, request.FriendId);
 
             if (!added)
@@ -41,6 +50,13 @@ public class FriendshipService : IFriendshipService
     {
         try
         {
+            var bothUsersExist = await CheckBothUsersExist(request.UserId, request.FriendId);
+
+            if (!bothUsersExist)
+            {
+                return new RemoveFriendCommand.Response.UserNotFound();
+            }
+
             var removed = await _friendshipRepository.RemoveFriend(request.UserId, request.FriendId);
 
             if (!removed)
@@ -60,6 +76,13 @@ public class FriendshipService : IFriendshipService
     {
         try
         {
+            var bothUsersExist = await CheckBothUsersExist(request.UserId, request.FriendId);
+
+            if (!bothUsersExist)
+            {
+                return new AreFriendsCommand.Response.UserNotFound();
+            }
+
             var result = await _friendshipRepository.AreFriends(request.UserId, request.FriendId);
 
             return new AreFriendsCommand.Response.Success(result);
@@ -74,6 +97,13 @@ public class FriendshipService : IFriendshipService
     {
         try
         {
+            var userExists = await _userRepository.ExistsById(request.UsedId);
+
+            if (!userExists)
+            {
+                return new GetUserFriendsCommand.Response.UserNotFound();
+            }
+
             var users = await _friendshipRepository.FindFriends(request.UsedId);
 
             return new GetUserFriendsCommand.Response.Success(users);
@@ -82,5 +112,19 @@ public class FriendshipService : IFriendshipService
         {
             return new GetUserFriendsCommand.Response.Failure("Unexpected error while getting friends");
         }
+    }
+
+    private async Task<bool> CheckBothUsersExist(long userId1, long userId2)
+    {
+        var user1Exists = await _userRepository.ExistsById(userId1);
+
+        if (!user1Exists)
+        {
+            return false;
+        }
+
+        var user2Exists = await _userRepository.ExistsById(userId2);
+
+        return user2Exists;
     }
 }

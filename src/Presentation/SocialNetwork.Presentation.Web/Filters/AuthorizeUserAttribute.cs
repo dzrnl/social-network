@@ -9,7 +9,7 @@ public class AuthorizeUserAttribute : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         var controller = (BaseController)context.Controller;
-        
+
         if (controller.CurrentUser == null)
         {
             context.Result = new RedirectToActionResult("Login", "Auth", null);

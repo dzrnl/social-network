@@ -44,7 +44,7 @@ public class ProfileController : BaseController
             return View("ProfileView", profileModel);
         }
 
-        if (CurrentUser.Username != user.Username)
+        if (CurrentUser.Id != user.Id)
         {
             var responseAreFriends = await _friendshipService.AreFriends(new(CurrentUser.Id, user.Id));
 

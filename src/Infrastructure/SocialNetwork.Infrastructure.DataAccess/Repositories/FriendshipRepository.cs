@@ -64,12 +64,7 @@ public class FriendshipRepository : IFriendshipRepository
     {
         var user = await _context.Users
             .Include(u => u.Friends)
-            .FirstOrDefaultAsync(u => u.Id == userId1);
-
-        if (user == null)
-        {
-            return false;
-        }
+            .SingleAsync(u => u.Id == userId1);
 
         return user.Friends.Any(f => f.Id == userId2);
     }
@@ -80,7 +75,7 @@ public class FriendshipRepository : IFriendshipRepository
             .AsNoTracking()
             .Where(u => u.Friends.Any(f => f.Id == userId))
             .ToListAsync();
-        
+
         return friends.Select(u => u.ToDomain()).ToList();
     }
 }

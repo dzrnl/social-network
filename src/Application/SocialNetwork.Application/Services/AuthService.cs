@@ -12,7 +12,7 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtProvider _jwtProvider;
-    
+
     public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
     {
         _userRepository = userRepository;
@@ -31,7 +31,7 @@ public class AuthService : IAuthService
         {
             return new RegisterUserCommand.Response.InvalidRequest(validationNameError);
         }
-        
+
         if (UserValidation.ValidateSurname(request.Surname) is { } validationSurnameError)
         {
             return new RegisterUserCommand.Response.InvalidRequest(validationSurnameError);
@@ -41,20 +41,20 @@ public class AuthService : IAuthService
         {
             return new RegisterUserCommand.Response.InvalidRequest(validationPasswordError);
         }
-        
+
         var hashedPassword = _passwordHasher.GenerateHash(request.Password);
 
         var query = new CreateUserQuery(request.Username, hashedPassword, request.Name, request.Surname);
 
         try
         {
-            var existingUser = await _userRepository.FindByUsername(query.Username);
-            
-            if (existingUser != null)
+            var userExists = await _userRepository.ExistsByUsername(query.Username);
+
+            if (userExists)
             {
                 return new RegisterUserCommand.Response.UserAlreadyExists();
             }
-            
+
             var user = await _userRepository.Add(query);
 
             return new RegisterUserCommand.Response.Success(user.Id);

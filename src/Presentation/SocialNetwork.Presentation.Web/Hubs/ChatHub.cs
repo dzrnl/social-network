@@ -7,7 +7,7 @@ namespace SocialNetwork.Presentation.Web.Hubs;
 public class ChatHub : Hub
 {
     private readonly IMessageService _messageService;
-    
+
     public ChatHub(IMessageService messageService)
     {
         _messageService = messageService;
@@ -21,11 +21,11 @@ public class ChatHub : Hub
         {
             return;
         }
-        
+
         var success = (SendMessageCommand.Response.Success)response;
 
         var message = success.Message;
-        
+
         await Clients.All.SendAsync("ReceiveMessage", message);
     }
 }

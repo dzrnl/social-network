@@ -7,7 +7,7 @@ public static class UserValidation
     public const int MaxSurnameLength = 255;
     public const int MinPasswordLength = 6;
     public const int MaxPasswordLength = 64;
-    
+
     private static readonly List<string> ReservedUsernames =
     [
         "login",
@@ -19,7 +19,7 @@ public static class UserValidation
         "friends",
         "settings"
     ];
-    
+
     public static string? ValidateUsername(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
@@ -54,7 +54,7 @@ public static class UserValidation
 
         return null;
     }
-    
+
     public static string? ValidateSurname(string surname)
     {
         if (string.IsNullOrWhiteSpace(surname))
@@ -76,7 +76,7 @@ public static class UserValidation
         {
             return "Password cannot be empty";
         }
-        
+
         if (password.Length < MinPasswordLength)
         {
             return "Password is too short";
