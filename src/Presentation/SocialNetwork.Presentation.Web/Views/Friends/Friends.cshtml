@@ -4,6 +4,10 @@
     ViewData["Title"] = "Друзья";
 }
 
+@section HeadArea {
+    <link href="~/css/users/users.css" rel="stylesheet">
+}
+
 @if (Model.Friends.Any())
 {
     <ul class="user-list">

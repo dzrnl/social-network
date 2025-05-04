@@ -4,6 +4,10 @@
     ViewData["Title"] = "Профиль";
 }
 
+@section HeadArea {
+    <link href="~/css/users/users.css" rel="stylesheet">
+}
+
 @await Html.PartialAsync("ProfileInfo", Model)
 
 <h3>Выход</h3>

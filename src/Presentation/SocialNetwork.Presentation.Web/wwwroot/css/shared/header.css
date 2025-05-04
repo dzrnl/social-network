@@ -1,0 +1,57 @@
+.site-header {
+    background-color: #4a76a8;
+    color: white;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title a {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.site-title a:hover {
+    text-decoration: underline;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+}
+
+.auth-links a {
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-links .btn-primary {
+    background-color: #4a76a8;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-links .btn-primary:hover {
+    background-color: #3b5c8b;
+}

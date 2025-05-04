@@ -9,21 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@title</title>
     <link href="~/css/styles.css" rel="stylesheet"/>
-    <link href="~/css/shared/header.css" rel="stylesheet"/>
-    <link href="~/css/shared/sidebar.css" rel="stylesheet">
     @await RenderSectionAsync("HeadArea", required: false)
 </head>
 <body>
-@await Html.PartialAsync("_Header")
 
-<div class="main-layout">
-    @await Html.PartialAsync("_Sidebar")
+<div class="container">
+    <h1>@title</h1>
 
-    <main class="main-content">
-        <h1>@title</h1>
-
-        @RenderBody()
-    </main>
+    @RenderBody()
 </div>
 
 @await RenderSectionAsync("Scripts", required: false)

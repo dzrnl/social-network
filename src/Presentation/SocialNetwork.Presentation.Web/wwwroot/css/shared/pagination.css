@@ -1,0 +1,25 @@
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+}
+
+.pagination-link {
+    width: auto;
+    text-decoration: none;
+}
+
+.pagination-page {
+    font-weight: bold;
+}
+
+.pagination-placeholder {
+    width: auto;
+}

@@ -5,6 +5,10 @@
     var currentUser = (SocialNetwork.Application.Models.User)ViewData["CurrentUser"]!;
 }
 
+@section HeadArea {
+    <link href="~/css/chat.css" rel="stylesheet">
+}
+
 <h1>Общий чат</h1>
 
 <div id="chatBox" class="chat-box">
