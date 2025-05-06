@@ -2,7 +2,7 @@ using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Contracts.Commands.Messages;
 
-public class GetAllMessagesCommand
+public static class GetAllMessagesCommand
 {
     public sealed record Request;
 

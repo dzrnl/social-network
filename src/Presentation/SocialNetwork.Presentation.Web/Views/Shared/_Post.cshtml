@@ -1,0 +1,28 @@
+@model SocialNetwork.Presentation.Web.Models.Posts.PostModel
+@{
+    var currentUser = ViewData["CurrentUser"] as SocialNetwork.Application.Models.User;
+}
+
+<div class="card mb-3">
+    <div class="card-body p-3">
+        <p class="card-text">@Model.Content</p>
+    </div>
+    <div class="card-footer text-muted d-flex justify-content-between p-2">
+        @if (Model.Author != null)
+        {
+            <span>posted @Model.PublishedAt by <a href="/@Model.Author.Username">@Model.Author.Username</a></span>
+        }
+        else
+        {
+            <span>posted @Model.PublishedAt by Deleted user</span>
+        }
+
+        @if (currentUser != null && currentUser.Id == Model.Author?.Id)
+        {
+            <form method="post" action="/feed/delete/@Model.Id" class="text-right mb-0">
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                <button type="submit" class="btn btn-outline-danger btn-sm p-1">Удалить</button>
+            </form>
+        }
+    </div>
+</div>

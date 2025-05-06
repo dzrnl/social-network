@@ -16,12 +16,14 @@ public interface IUserRepository
     Task<User?> FindById(long id);
 
     Task<User?> FindByUsername(string username);
-    
+
     Task<bool> ExistsById(long id);
-    
+
     Task<bool> ExistsByUsername(string username);
 
     Task<bool> ChangeName(ChangeUserNameQuery query);
+
+    Task<bool> ChangeSurname(ChangeUserSurnameQuery query);
 
     Task<bool> Delete(long id);
 

@@ -1,3 +1,4 @@
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Models;
 
 namespace SocialNetwork.Application.Abstractions.Repositories;
@@ -10,5 +11,5 @@ public interface IFriendshipRepository
 
     Task<bool> AreFriends(long userId1, long userId2);
 
-    Task<List<User>> FindFriends(long userId);
+    Task<List<User>> FindFriends(long userId, PaginationQuery pagination);
 }

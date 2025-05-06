@@ -7,6 +7,7 @@ using SocialNetwork.Presentation.Web.Models.Messages;
 
 namespace SocialNetwork.Presentation.Web.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/messages")]
 public class MessagesApiController : ControllerBase
@@ -21,7 +22,6 @@ public class MessagesApiController : ControllerBase
     }
 
     [HttpPost("send")]
-    [Authorize]
     public async Task<ActionResult> SendMessage(SendMessageModel request)
     {
         var currentUserId = _currentUserManager.CurrentUser!.Id;
@@ -51,7 +51,6 @@ public class MessagesApiController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult> GetAllChatMessages()
     {
         var response = await _messageService.GetAllMessages(new());

@@ -7,42 +7,43 @@ const connection = new signalR.HubConnectionBuilder()
 connection.on("ReceiveMessage", function (message) {
     const container = document.getElementById("chatBox");
 
+    const isOwnMessage = message.sender && message.sender.id === userId;
+
     const wrapper = document.createElement("div");
-    wrapper.className = "chat-message-wrapper";
+    wrapper.className = isOwnMessage
+        ? "chat-message-wrapper own-message"
+        : "chat-message-wrapper";
+
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "chat-message";
 
     const senderNameWrapper = document.createElement("div");
-    senderNameWrapper.className = "sender-name-wrapper";
+    senderNameWrapper.className = "sender-name";
 
     let senderName;
-
-    if (message.sender == null) {
+    if (!message.sender) {
         senderName = document.createElement("span");
-        senderName.className = "sender-name";
         senderName.textContent = "Deleted user";
-    } else if (message.sender.id === userId) {
+    } else if (isOwnMessage) {
         senderName = document.createElement("span");
-        senderName.className = "sender-name";
         senderName.textContent = "You";
-        wrapper.classList.add("own-message");
     } else {
         senderName = document.createElement("a");
         senderName.href = `/${message.sender.username}`;
-        senderName.className = "sender-name";
+        senderName.className = "text-decoration-none";
         senderName.textContent = message.sender.name;
     }
 
     senderNameWrapper.appendChild(senderName);
 
-    const msg = document.createElement("div");
-    msg.className = "message-content";
-    msg.textContent = message.content;
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "message-content";
+    contentDiv.textContent = message.content;
 
-    const chatMessage = document.createElement("div");
-    chatMessage.className = "chat-message";
-    chatMessage.appendChild(senderNameWrapper);
-    chatMessage.appendChild(msg);
+    messageDiv.appendChild(senderNameWrapper);
+    messageDiv.appendChild(contentDiv);
 
-    wrapper.appendChild(chatMessage);
+    wrapper.appendChild(messageDiv);
     container.appendChild(wrapper);
 
     scrollToBottom();
@@ -54,8 +55,7 @@ function sendMessage() {
     const input = document.getElementById("messageInput");
     const content = input.value.trim();
 
-    const message = input.value.trim();
-    if (message) {
+    if (content) {
         connection.invoke("SendMessage", userId, content)
             .catch(err => console.error(err.toString()));
 

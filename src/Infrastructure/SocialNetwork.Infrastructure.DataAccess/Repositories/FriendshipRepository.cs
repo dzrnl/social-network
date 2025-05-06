@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Models;
 using SocialNetwork.Infrastructure.DataAccess.Mappers;
@@ -69,11 +70,13 @@ public class FriendshipRepository : IFriendshipRepository
         return user.Friends.Any(f => f.Id == userId2);
     }
 
-    public async Task<List<User>> FindFriends(long userId)
+    public async Task<List<User>> FindFriends(long userId, PaginationQuery pagination)
     {
         var friends = await _context.Users
             .AsNoTracking()
             .Where(u => u.Friends.Any(f => f.Id == userId))
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
             .ToListAsync();
 
         return friends.Select(u => u.ToDomain()).ToList();

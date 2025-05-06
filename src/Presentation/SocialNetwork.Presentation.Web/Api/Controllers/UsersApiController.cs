@@ -62,7 +62,7 @@ public class UsersApiController : ControllerBase
         return Ok(userResponse);
     }
 
-    [HttpPatch("{id:long}")]
+    [HttpPatch("{id:long}/name")]
     [Authorize]
     public async Task<ActionResult> ChangeUserName(long id, ChangeUserNameModel model)
     {
@@ -84,6 +84,35 @@ public class UsersApiController : ControllerBase
         }
 
         if (response is ChangeUserNameCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        return Ok();
+    }
+    
+    [HttpPatch("{id:long}/surname")]
+    [Authorize]
+    public async Task<ActionResult> ChangeUserSurname(long id, ChangeUserSurnameModel model)
+    {
+        if (_currentUserManager.CurrentUser?.Id != id)
+        {
+            return Forbid();
+        }
+
+        var response = await _userService.ChangeUserSurname(new(id, model.NewSurname));
+
+        if (response is ChangeUserSurnameCommand.Response.InvalidRequest invalidRequest)
+        {
+            return BadRequest(invalidRequest.Message);
+        }
+
+        if (response is ChangeUserSurnameCommand.Response.NotFound)
+        {
+            return NotFound();
+        }
+
+        if (response is ChangeUserSurnameCommand.Response.Failure failure)
         {
             return StatusCode(500, failure.Message);
         }

@@ -3,7 +3,6 @@ using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
-using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
@@ -30,22 +29,39 @@ public class UserService : IUserService
 
         try
         {
-            List<User> users;
-
-            if (!string.IsNullOrWhiteSpace(request.Query))
-            {
-                users = await _userRepository.SearchPaged(request.Query, paginationQuery);
-            }
-            else
-            {
-                users = await _userRepository.FindPaged(paginationQuery);
-            }
+            var users = await _userRepository.FindPaged(paginationQuery);
 
             return new GetUsersCommand.Response.Success(users);
         }
         catch (Exception)
         {
             return new GetUsersCommand.Response.Failure("Unexpected error while fetching users");
+        }
+    }
+
+    public async Task<SearchUsersCommand.Response> SearchUsers(SearchUsersCommand.Request request)
+    {
+        if (PaginationValidation.Validate(request.Page, request.PageSize, MaxPageSize) is { } paginationError)
+        {
+            return new SearchUsersCommand.Response.InvalidRequest(paginationError);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Query))
+        {
+            return new SearchUsersCommand.Response.InvalidRequest("Query is empty");
+        }
+
+        var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
+
+        try
+        {
+            var users = await _userRepository.SearchPaged(request.Query, paginationQuery);
+
+            return new SearchUsersCommand.Response.Success(users);
+        }
+        catch (Exception)
+        {
+            return new SearchUsersCommand.Response.Failure("Unexpected error while searching users");
         }
     }
 
@@ -110,6 +126,32 @@ public class UserService : IUserService
         catch (Exception)
         {
             return new ChangeUserNameCommand.Response.Failure("Unexpected error while changing user name");
+        }
+    }
+
+    public async Task<ChangeUserSurnameCommand.Response> ChangeUserSurname(ChangeUserSurnameCommand.Request request)
+    {
+        if (UserValidation.ValidateSurname(request.NewSurname) is { } validationNameError)
+        {
+            return new ChangeUserSurnameCommand.Response.InvalidRequest(validationNameError);
+        }
+
+        var query = new ChangeUserSurnameQuery(request.Id, request.NewSurname);
+
+        try
+        {
+            var changed = await _userRepository.ChangeSurname(query);
+
+            if (changed == false)
+            {
+                return new ChangeUserSurnameCommand.Response.NotFound();
+            }
+
+            return new ChangeUserSurnameCommand.Response.Success();
+        }
+        catch (Exception)
+        {
+            return new ChangeUserSurnameCommand.Response.Failure("Unexpected error while changing user surname");
         }
     }
 

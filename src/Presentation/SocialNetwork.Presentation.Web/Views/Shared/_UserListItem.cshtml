@@ -1,0 +1,10 @@
+@model SocialNetwork.Presentation.Web.Models.Users.UserModel
+
+<li class="list-group-item d-flex align-items-center">
+    <img src="/images/default-avatar.png" alt="Аватар" class="rounded-circle" width="50" height="50"/>
+    <div class="ml-3">
+        <a href="/@Model.Username" class="d-block font-weight-bold user-link">@Model.Name @Model.Surname</a>
+        <div>@Model.Username</div>
+        <div class="text-muted">Город, улица</div>
+    </div>
+</li>

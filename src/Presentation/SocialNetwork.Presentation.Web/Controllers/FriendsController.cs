@@ -12,6 +12,8 @@ namespace SocialNetwork.Presentation.Web.Controllers;
 [Route("friends")]
 public class FriendsController : BaseController
 {
+    private const int PageSize = 10;
+
     private readonly IFriendshipService _friendshipService;
 
     public FriendsController(
@@ -25,13 +27,13 @@ public class FriendsController : BaseController
     [HttpGet]
     public async Task<IActionResult> Friends()
     {
-        var response = await _friendshipService.GetUserFriends(new(AuthUser.Id));
+        var response = await _friendshipService.GetUserFriends(new(AuthUser.Id, 1, PageSize));
 
         if (response is GetUserFriendsCommand.Response.Failure failure)
         {
             return UnprocessableEntity(failure.Message);
         }
-        
+
         var success = (GetUserFriendsCommand.Response.Success)response;
 
         var friends = success.Friends
@@ -42,7 +44,7 @@ public class FriendsController : BaseController
 
         return View(result);
     }
-    
+
     [HttpPost("add/{friendId:long}")]
     public async Task<IActionResult> AddFriend(long friendId, [FromForm] string? returnUrl)
     {
@@ -55,7 +57,7 @@ public class FriendsController : BaseController
 
         return Redirect(returnUrl ?? "/");
     }
-    
+
     [HttpPost("delete/{friendId:long}")]
     public async Task<IActionResult> DeleteFriend(long friendId, [FromForm] string? returnUrl)
     {

@@ -1,11 +1,15 @@
+using SocialNetwork.Application.Abstractions.Queries;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Friends;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
 
 public class FriendshipService : IFriendshipService
 {
+    public const int MaxPageSize = 100;
+
     private readonly IFriendshipRepository _friendshipRepository;
     private readonly IUserRepository _userRepository;
 
@@ -95,6 +99,13 @@ public class FriendshipService : IFriendshipService
 
     public async Task<GetUserFriendsCommand.Response> GetUserFriends(GetUserFriendsCommand.Request request)
     {
+        if (PaginationValidation.Validate(request.Page, request.PageSize, MaxPageSize) is { } paginationError)
+        {
+            return new GetUserFriendsCommand.Response.InvalidRequest(paginationError);
+        }
+
+        var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
+
         try
         {
             var userExists = await _userRepository.ExistsById(request.UsedId);
@@ -104,7 +115,7 @@ public class FriendshipService : IFriendshipService
                 return new GetUserFriendsCommand.Response.UserNotFound();
             }
 
-            var users = await _friendshipRepository.FindFriends(request.UsedId);
+            var users = await _friendshipRepository.FindFriends(request.UsedId, paginationQuery);
 
             return new GetUserFriendsCommand.Response.Success(users);
         }

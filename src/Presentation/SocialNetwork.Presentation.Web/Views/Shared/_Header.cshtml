@@ -2,23 +2,24 @@
     var currentUser = ViewData["CurrentUser"] as SocialNetwork.Application.Models.User;
 }
 
-<header class="site-header">
-    <div class="header-container">
-        <div class="site-title">
-            <a href="/">SocialNetwork</a>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">SocialNetwork</a>
         </div>
-
-        <div class="auth-links">
-            @if (currentUser != null)
-            {
-                <a href="/@currentUser.Username">
-                    Моя страница (@currentUser.Username)
-                </a>
-            }
-            else
-            {
-                <a href="/login" class="btn btn-primary">Войти</a>
-            }
-        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                @if (currentUser != null)
+                {
+                    <a href="/@currentUser.Username">
+                        Моя страница (@currentUser.Username)
+                    </a>
+                }
+                else
+                {
+                    <a href="/login" class="btn btn-primary">Войти</a>
+                }
+            </li>
+        </ul>
     </div>
-</header>
+</nav>

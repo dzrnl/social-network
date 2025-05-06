@@ -5,7 +5,7 @@ using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
 using SocialNetwork.Infrastructure.Security;
 using SocialNetwork.Presentation.Web.Filters;
-using SocialNetwork.Presentation.Web.Models.Users;
+using SocialNetwork.Presentation.Web.Models.Settings;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
@@ -26,25 +26,50 @@ public class SettingsController : BaseController
     }
 
     [HttpGet]
-    public IActionResult Settings()
+    public async Task<IActionResult> Settings()
     {
-        return View();
+        var userResponse = await _userService.GetUserById(new(AuthUser.Id));
+
+        var user = ((GetUserCommand.Response.Success)userResponse).User;
+
+        var publicInfoModel = new UserPublicInfoModel(user.Name, user.Surname);
+
+        return View("Settings", publicInfoModel);
     }
 
-    [HttpPost("change-username")]
-    public async Task<IActionResult> ChangeUserName(ChangeUserNameModel model)
+    [HttpPost]
+    public async Task<IActionResult> UpdateUserPublicInfo(UserPublicInfoModel model)
     {
-        var response = await _userService.ChangeUserName(new(AuthUser.Id, model.NewName));
-
-        if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
+        if (model.Name != AuthUser.Name)
         {
-            ModelState.AddModelError(string.Empty, invalidRequest.Message);
-            return View("Settings");
+            var response = await _userService.ChangeUserName(new(AuthUser.Id, model.Name));
+
+            if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
+            {
+                ModelState.AddModelError(string.Empty, invalidRequest.Message);
+                return View("Settings");
+            }
+
+            if (response is ChangeUserNameCommand.Response.Failure failure)
+            {
+                return UnprocessableEntity(failure.Message);
+            }
         }
 
-        if (response is ChangeUserNameCommand.Response.Failure failure)
+        if (model.Surname != AuthUser.Surname)
         {
-            return UnprocessableEntity(failure.Message);
+            var response = await _userService.ChangeUserSurname(new(AuthUser.Id, model.Surname));
+
+            if (response is ChangeUserSurnameCommand.Response.InvalidRequest invalidRequest)
+            {
+                ModelState.AddModelError(string.Empty, invalidRequest.Message);
+                return View("Settings");
+            }
+
+            if (response is ChangeUserSurnameCommand.Response.Failure failure)
+            {
+                return UnprocessableEntity(failure.Message);
+            }
         }
 
         return RedirectToAction("Settings");

@@ -1,5 +1,29 @@
+@model SocialNetwork.Presentation.Web.Models.Posts.FeedModel
+
 @{
     ViewData["Title"] = "Лента новостей";
+    var currentUser = (SocialNetwork.Application.Models.User?)ViewData["CurrentUser"];
 }
 
-Пока ничего нет
+<div class="container mt-4">
+    @if (currentUser != null)
+    {
+        <form method="post" asp-controller="Feed" asp-action="CreatePost">
+            <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+            <div class="input-group mt-2 mb-3">
+                <textarea class="form-control" name="Content" rows="3" placeholder="Make a post..."></textarea>
+                <button class="btn btn-success rounded-0 rounded-end" type="submit" name="post">Post</button>
+            </div>
+        </form>
+
+        <hr/>
+    }
+
+    @foreach (var post in Model.Posts)
+    {
+        @await Html.PartialAsync("_Post", post, new ViewDataDictionary(ViewData)
+        {
+            ["CurrentUser"] = currentUser
+        })
+    }
+</div>

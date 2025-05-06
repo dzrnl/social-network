@@ -1,9 +1,9 @@
 namespace SocialNetwork.Application.Validations;
 
-public class MessageValidation
+public static class MessageValidation
 {
     public const int MaxLength = 2000;
-    
+
     public static string? ValidateContent(string content)
     {
         if (string.IsNullOrWhiteSpace(content))

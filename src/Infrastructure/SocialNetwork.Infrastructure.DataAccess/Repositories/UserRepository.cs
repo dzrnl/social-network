@@ -104,6 +104,16 @@ public class UserRepository : IUserRepository
         return affectedRows > 0;
     }
 
+    public async Task<bool> ChangeSurname(ChangeUserSurnameQuery query)
+    {
+        var affectedRows = await _context.Users
+            .Where(u => u.Id == query.Id)
+            .ExecuteUpdateAsync(u
+                => u.SetProperty(x => x.Surname, query.NewSurname));
+
+        return affectedRows > 0;
+    }
+
     public async Task<bool> Delete(long id)
     {
         var affectedRows = await _context.Users

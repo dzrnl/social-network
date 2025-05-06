@@ -4,32 +4,18 @@
     ViewData["Title"] = "Друзья";
 }
 
-@section HeadArea {
-    <link href="~/css/users/users.css" rel="stylesheet">
-}
-
-@if (Model.Friends.Any())
-{
-    <ul class="user-list">
-        @foreach (var user in Model.Friends)
-        {
-            <li class="user-list-item">
-                <img src="/images/default-avatar.png" alt="Аватар" class="avatar-small"/>
-
-                <div>
-                    <a href="/@user.Username" class="user-link">
-                        <span class="user-name">@user.Name @user.Surname</span>
-                        <div class="user-username">@user.Username</div>
-                    </a>
-                    <div class="user-address">
-                        Город, улица
-                    </div>
-                </div>
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p>Нет друзей</p>
-}
+<div class="container mt-4">
+    @if (Model.Friends.Any())
+    {
+        <ul class="list-group">
+            @foreach (var user in Model.Friends)
+            {
+                @await Html.PartialAsync("_UserListItem", user)
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">Нет друзей</p>
+    }
+</div>

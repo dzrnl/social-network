@@ -4,67 +4,42 @@
     ViewData["Title"] = "Поиск";
     var prevPage = Model.Page > 1 ? Model.Page - 1 : 1;
     var nextPage = Model.Page + 1;
-    var andQueryParam = string.IsNullOrEmpty(Model.Query) ? "" : "&query=" + Uri.EscapeDataString(Model.Query);
+    var andQueryParam = string.IsNullOrWhiteSpace(Model.Query) ? "" : "&query=" + Uri.EscapeDataString(Model.Query);
 }
 
-@section HeadArea {
-    <link href="~/css/users/users.css" rel="stylesheet">
-    <link href="~/css/search.css" rel="stylesheet">
-    <link href="~/css/shared/pagination.css" rel="stylesheet">
-}
+<div class="container mt-4">
+    <form method="get" asp-controller="Search" asp-action="Search" class="form-inline mb-4 justify-content-center">
+        <input type="text" name="query" placeholder="Введите запрос" value="@Model.Query" class="form-control mr-2"/>
+        <button type="submit" class="btn btn-primary">Поиск</button>
+    </form>
 
-<form method="get" asp-controller="Search" asp-action="Search" class="search-form">
-    <input type="text" name="query" class="form-control search-input" placeholder="Введите имя пользователя"
-           value="@Model.Query"/>
-    <button type="submit" class="btn btn-primary search-button">Поиск</button>
-</form>
+    @if (Model.Users.Any())
+    {
+        <ul class="list-group">
+            @foreach (var user in Model.Users)
+            {
+                @await Html.PartialAsync("_UserListItem", user)
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Пользователи не найдены</p>
+    }
 
-@if (Model.Users.Any())
-{
-    <ul class="user-list">
-        @foreach (var user in Model.Users)
-        {
-            <li class="user-list-item">
-                <img src="/images/default-avatar.png" alt="Аватар" class="avatar-small"/>
+    <div class="d-flex justify-content-center mt-4">
+        <div class="btn-group" role="group">
+            @if (Model.Page > 1)
+            {
+                <a href="/search?page=@prevPage@andQueryParam" class="btn btn-secondary">←</a>
+            }
 
-                <div>
-                    <a href="/@user.Username" class="user-link">
-                        <span class="user-name">@user.Name @user.Surname</span>
-                        <div class="user-username">@user.Username</div>
-                    </a>
-                    <div class="user-address">
-                        Город, улица
-                    </div>
-                </div>
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p>Пользователи не найдены</p>
-}
+            <span class="btn btn-light disabled">@Model.Page</span>
 
-<div class="pagination-container">
-    <div class="pagination-inner">
-        @if (Model.Page > 1)
-        {
-            <a class="btn-primary pagination-link" href="/search?page=@prevPage@andQueryParam">←</a>
-        }
-        else
-        {
-            <span class="pagination-placeholder"></span>
-        }
-
-        <span class="pagination-page">@Model.Page</span>
-
-        @if (!(Model.Users.Count < Model.PageSize))
-        {
-            <a class="btn-primary pagination-link" href="/search?page=@nextPage@andQueryParam">→</a>
-        }
-        else
-        {
-            <span class="pagination-placeholder"></span>
-        }
+            @if (!(Model.Users.Count < Model.PageSize))
+            {
+                <a href="/search?page=@nextPage@andQueryParam" class="btn btn-secondary">→</a>
+            }
+        </div>
     </div>
 </div>

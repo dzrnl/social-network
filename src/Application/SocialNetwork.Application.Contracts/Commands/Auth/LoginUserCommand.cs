@@ -1,6 +1,6 @@
 namespace SocialNetwork.Application.Contracts.Commands.Auth;
 
-public class LoginUserCommand
+public static class LoginUserCommand
 {
     public sealed record Request(string Username, string Password);
 

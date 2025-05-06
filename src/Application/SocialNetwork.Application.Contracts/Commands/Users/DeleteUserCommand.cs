@@ -1,6 +1,6 @@
 namespace SocialNetwork.Application.Contracts.Commands.Users;
 
-public class DeleteUserCommand
+public static class DeleteUserCommand
 {
     public sealed record Request(long Id);
 

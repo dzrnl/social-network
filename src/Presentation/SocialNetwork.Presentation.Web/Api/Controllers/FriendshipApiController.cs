@@ -98,10 +98,10 @@ public class FriendshipApiController : ControllerBase
         return Ok(success.AreFriends);
     }
 
-    [HttpGet("{userId:long}/friends")]
-    public async Task<ActionResult> GetUserFriends(long userId)
+    [HttpGet]
+    public async Task<ActionResult> GetUserFriends([FromQuery] GetUserFriendsModel model)
     {
-        var response = await _friendshipService.GetUserFriends(new(userId));
+        var response = await _friendshipService.GetUserFriends(new(model.UserId, model.Page, model.PageSize));
 
         if (response is GetUserFriendsCommand.Response.UserNotFound userNotFound)
         {

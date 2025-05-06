@@ -11,9 +11,13 @@ public static class ServiceCollectionExtensions
         collection.AddScoped<CurrentUserManager>();
 
         collection.AddScoped<IAuthService, AuthService>();
+
         collection.AddScoped<IUserService, UserService>();
         collection.AddScoped<IFriendshipService, FriendshipService>();
+
         collection.AddScoped<IMessageService, MessageService>();
+
+        collection.AddScoped<IPostService, PostService>();
 
         return collection;
     }

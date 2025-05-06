@@ -2,19 +2,21 @@
     var currentUser = ViewData["CurrentUser"] as SocialNetwork.Application.Models.User;
 }
 
-<nav class="sidebar">
-    <ul>
-        <li><a href="/search">Поиск</a></li>
-        @if (currentUser != null)
-        {
-            <li><a href="/@currentUser.Username">Профиль</a></li>
-        }
-        <li><a href="/feed">Новости</a></li>
-        @if (currentUser != null)
-        {
-            <li><a href="/messages">Сообщения</a></li>
-            <li><a href="/friends">Друзья</a></li>
-            <li><a href="/settings">Настройки</a></li>
-        }
-    </ul>
-</nav>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <ul class="sidebar-menu">
+            <li><a href="/search">Поиск</a></li>
+            @if (currentUser != null)
+            {
+                <li><a href="/@currentUser.Username">Профиль</a></li>
+            }
+            <li><a href="/feed">Новости</a></li>
+            @if (currentUser != null)
+            {
+                <li><a href="/messages">Сообщения</a></li>
+                <li><a href="/friends">Друзья</a></li>
+                <li><a href="/settings">Настройки</a></li>
+            }
+        </ul>
+    </div>
+</div>

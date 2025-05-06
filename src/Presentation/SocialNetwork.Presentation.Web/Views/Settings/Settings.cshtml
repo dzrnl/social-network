@@ -1,35 +1,58 @@
+@model SocialNetwork.Presentation.Web.Models.Settings.UserPublicInfoModel
+
 @{
     ViewData["Title"] = "Настройки";
 }
 
-<h3>Изменить имя</h3>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Изменение профиля</h4>
 
-<form method="post" asp-action="ChangeUserName">
-    <div class="form-group">
-        <label for="NewName">Новое имя</label>
-        <input type="text" id="NewName" name="NewName" class="form-control"/>
-    </div>
-    <button type="submit" class="btn btn-primary">Изменить</button>
-</form>
+                    <form method="post" asp-action="UpdateUserPublicInfo">
+                        <div class="mb-3">
+                            <label for="Name" class="form-label">Имя</label>
+                            <input type="text" id="Name" name="Name" class="form-control" value="@Model.Name"
+                                   placeholder="Введите новое имя"/>
+                        </div>
 
-<h3>Удалить аккаунт</h3>
+                        <div class="mb-3">
+                            <label for="Surname" class="form-label">Фамилия</label>
+                            <input type="text" id="Surname" name="Surname" class="form-control" value="@Model.Surname"
+                                   placeholder="Введите новую фамилию"/>
+                        </div>
 
-<form method="post" asp-action="DeleteUser">
-    <button type="submit" class="btn btn-primary">Удалить аккаунт</button>
-</form>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </form>
+                </div>
+            </div>
 
-@if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
-{
-    <div class="error-message">
-        @{
-            var modelErrorCollection = ViewData.ModelState[string.Empty]?.Errors;
-        }
-        @if (modelErrorCollection != null)
-        {
-            foreach (var error in modelErrorCollection)
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h4 class="card-title text-danger">Удалить аккаунт</h4>
+                    <form method="post" asp-action="DeleteUser">
+                        <button type="submit" class="btn btn-outline-danger">Удалить аккаунт</button>
+                    </form>
+                </div>
+            </div>
+
+            @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
             {
-                <div>@error.ErrorMessage</div>
+                <div class="alert alert-danger mt-4">
+                    @{
+                        var modelErrorCollection = ViewData.ModelState[string.Empty]?.Errors;
+                    }
+                    @if (modelErrorCollection != null)
+                    {
+                        foreach (var error in modelErrorCollection)
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    }
+                </div>
             }
-        }
+        </div>
     </div>
-}
+</div>
