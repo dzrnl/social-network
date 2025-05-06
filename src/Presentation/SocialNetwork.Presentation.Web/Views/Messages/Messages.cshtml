@@ -3,37 +3,54 @@
 @{
     ViewData["Title"] = "Сообщения";
     var currentUser = (SocialNetwork.Application.Models.User)ViewData["CurrentUser"]!;
+    long? previousSenderId = null;
+    var openGroup = false;
 }
 
 <div class="container mt-4 chat-wrapper">
     <div class="chat-container p-3 mb-3 flex-grow-1 d-flex flex-column">
         <div id="chatBox" class="chat-box flex-grow-1">
-            @foreach (var msg in Model.Messages)
+            @for (var i = 0; i < Model.Messages.Count; i++)
             {
-                var isOwnMessage = msg.Sender?.Id == currentUser.Id;
-                var messageClass = isOwnMessage ? "chat-message-wrapper own-message" : "chat-message-wrapper";
+                var msg = Model.Messages[i];
+                var senderId = msg.Sender?.Id;
+                var isOwnMessage = senderId == currentUser.Id;
+                var isFirstOfGroup = senderId != previousSenderId || senderId == null;
+                var isLastOfGroup = i == Model.Messages.Count - 1 || Model.Messages[i + 1].Sender?.Id != senderId || senderId == null;
 
-                <div class="@messageClass">
-                    <div class="chat-message">
-                        <div class="sender-name">
-                            @if (msg.Sender == null)
+                if (isFirstOfGroup)
+                {
+                    var messageClass = isOwnMessage ? "chat-message-wrapper own-message" : "chat-message-wrapper";
+                    @: <div class="@messageClass">
+                        @: <div class="chat-message">
+                        @: <div class="sender-name">
+                            if (msg.Sender == null)
                             {
-                                <span>Deleted user</span>
+                                @: <span>Deleted user</span>
                             }
                             else if (isOwnMessage)
                             {
-                                <span>You</span>
+                                @: <span>You</span>
                             }
                             else
                             {
-                                <a href="/@msg.Sender.Username" class="text-decoration-none">@msg.Sender.Name</a>
+                                @: <a href="/@msg.Sender.Username" class="text-decoration-none">@msg.Sender.Name</a>
                             }
-                        </div>
-                        <div class="message-content">
-                            @msg.Content
-                        </div>
-                    </div>
-                </div>
+
+                            @: </div>
+                        openGroup = true;
+                    }
+
+                    @: <div class="message-content">@msg.Content</div>
+
+                    if (isLastOfGroup && openGroup)
+                    {
+                            @: </div> <!-- .chat-message -->
+                        @: </div> <!-- .chat-message-wrapper -->
+                    openGroup = false;
+                }
+
+                previousSenderId = senderId;
             }
         </div>
     </div>
@@ -43,6 +60,7 @@
         <button id="sendButton" class="btn btn-primary ms-2">Отправить</button>
     </div>
 </div>
+
 @section Scripts {
     <script>
         window.currentUserId = @currentUser.Id;

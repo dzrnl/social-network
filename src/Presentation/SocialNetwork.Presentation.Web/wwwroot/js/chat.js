@@ -4,48 +4,62 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("/chathub")
     .build();
 
+let previousSenderId = null;
+let lastMessageWrapper = null;
+
 connection.on("ReceiveMessage", function (message) {
     const container = document.getElementById("chatBox");
+    const senderId = message.sender ? message.sender.id : null;
+    const isOwnMessage = senderId === userId;
 
-    const isOwnMessage = message.sender && message.sender.id === userId;
+    const isSameSenderAsPrevious = previousSenderId === senderId;
 
-    const wrapper = document.createElement("div");
-    wrapper.className = isOwnMessage
-        ? "chat-message-wrapper own-message"
-        : "chat-message-wrapper";
+    if (!isSameSenderAsPrevious || !lastMessageWrapper) {
+        const wrapper = document.createElement("div");
+        wrapper.className = isOwnMessage
+            ? "chat-message-wrapper own-message"
+            : "chat-message-wrapper";
 
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "chat-message";
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "chat-message";
 
-    const senderNameWrapper = document.createElement("div");
-    senderNameWrapper.className = "sender-name";
+        const senderNameWrapper = document.createElement("div");
+        senderNameWrapper.className = "sender-name";
 
-    let senderName;
-    if (!message.sender) {
-        senderName = document.createElement("span");
-        senderName.textContent = "Deleted user";
-    } else if (isOwnMessage) {
-        senderName = document.createElement("span");
-        senderName.textContent = "You";
+        let senderName;
+        if (!message.sender) {
+            senderName = document.createElement("span");
+            senderName.textContent = "Deleted user";
+        } else if (isOwnMessage) {
+            senderName = document.createElement("span");
+            senderName.textContent = "You";
+        } else {
+            senderName = document.createElement("a");
+            senderName.href = `/${message.sender.username}`;
+            senderName.className = "text-decoration-none";
+            senderName.textContent = message.sender.name;
+        }
+
+        senderNameWrapper.appendChild(senderName);
+        messageDiv.appendChild(senderNameWrapper);
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+        contentDiv.textContent = message.content;
+
+        messageDiv.appendChild(contentDiv);
+        wrapper.appendChild(messageDiv);
+        container.appendChild(wrapper);
+
+        lastMessageWrapper = messageDiv;
     } else {
-        senderName = document.createElement("a");
-        senderName.href = `/${message.sender.username}`;
-        senderName.className = "text-decoration-none";
-        senderName.textContent = message.sender.name;
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+        contentDiv.textContent = message.content;
+        lastMessageWrapper.appendChild(contentDiv);
     }
 
-    senderNameWrapper.appendChild(senderName);
-
-    const contentDiv = document.createElement("div");
-    contentDiv.className = "message-content";
-    contentDiv.textContent = message.content;
-
-    messageDiv.appendChild(senderNameWrapper);
-    messageDiv.appendChild(contentDiv);
-
-    wrapper.appendChild(messageDiv);
-    container.appendChild(wrapper);
-
+    previousSenderId = senderId;
     scrollToBottom();
 });
 
