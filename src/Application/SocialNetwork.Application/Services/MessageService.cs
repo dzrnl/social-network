@@ -2,7 +2,6 @@ using SocialNetwork.Application.Abstractions.Queries.Messages;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Messages;
 using SocialNetwork.Application.Contracts.Services;
-using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
 
@@ -19,11 +18,6 @@ public class MessageService : IMessageService
 
     public async Task<SendMessageCommand.Response> SendMessage(SendMessageCommand.Request request)
     {
-        if (MessageValidation.ValidateContent(request.Content) is { } validationContentError)
-        {
-            return new SendMessageCommand.Response.InvalidRequest(validationContentError);
-        }
-
         var query = new CreateMessageQuery(request.SenderId, request.Content);
 
         try

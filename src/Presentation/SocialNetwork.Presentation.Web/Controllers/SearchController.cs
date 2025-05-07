@@ -30,14 +30,9 @@ public class SearchController : BaseController
         {
             var response = await _userService.GetUsers(new(page, PageSize));
 
-            if (response is GetUsersCommand.Response.InvalidRequest invalidRequest)
-            {
-                return BadRequest(invalidRequest);
-            }
-
             if (response is GetUsersCommand.Response.Failure failure)
             {
-                return UnprocessableEntity(failure.Message);
+                return StatusCode(500, failure.Message);
             }
 
             var success = (GetUsersCommand.Response.Success)response;
@@ -48,14 +43,9 @@ public class SearchController : BaseController
         {
             var response = await _userService.SearchUsers(new(query, page, PageSize));
 
-            if (response is SearchUsersCommand.Response.InvalidRequest invalidRequest)
-            {
-                return BadRequest(invalidRequest);
-            }
-
             if (response is SearchUsersCommand.Response.Failure failure)
             {
-                return UnprocessableEntity(failure.Message);
+                return StatusCode(500, failure.Message);
             }
 
             var success = (SearchUsersCommand.Response.Success)response;
@@ -67,7 +57,7 @@ public class SearchController : BaseController
             .Select(UserModel.ToViewModel)
             .ToList();
 
-        var searchResult = new SearchUsersModel(page, PageSize, usersModel, query);
+        var searchResult = new SearchUsersResultModel(page, PageSize, usersModel, query);
 
         return View(searchResult);
     }

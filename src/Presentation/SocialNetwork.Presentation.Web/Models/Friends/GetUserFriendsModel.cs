@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SocialNetwork.Presentation.Web.Models.Friends;
 
-public record GetUserFriendsModel(long UserId, int Page = 1, int PageSize = 10);
+public record GetUserFriendsModel([Required] long UserId) : PaginatedRequest;

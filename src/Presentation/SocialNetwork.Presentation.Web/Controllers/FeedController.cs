@@ -22,16 +22,11 @@ public class FeedController : BaseController
     [HttpGet]
     public async Task<IActionResult> Feed()
     {
-        var response = await _postService.GetPosts(new(1, PageSize));
-
-        if (response is GetPostsCommand.Response.InvalidRequest invalidRequest)
-        {
-            return BadRequest(invalidRequest.Message);
-        }
+        var response = await _postService.GetPosts(new(1, PageSize)); // TODO: pages
 
         if (response is GetPostsCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         var success = (GetPostsCommand.Response.Success)response;
@@ -47,18 +42,13 @@ public class FeedController : BaseController
     [HttpPost("post")]
     public async Task<IActionResult> CreatePost(CreatePostModel model, string? returnUrl)
     {
-        var response = await _postService.CreatePost(new(AuthUser.Id, model.Content));
-
-        if (response is CreatePostCommand.Response.InvalidRequest invalidRequest)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(invalidRequest.Message);
+            return BadRequest("Invalid input data"); // TODO
         }
 
-        if (response is CreatePostCommand.Response.UserNotFound userNotFound)
-        {
-            return BadRequest(userNotFound.Message);
-        }
-        
+        await _postService.CreatePost(new(AuthUser.Id, model.Content));
+
         return Redirect(returnUrl ?? "/feed");
     }
 
@@ -75,9 +65,9 @@ public class FeedController : BaseController
 
         if (response is DeletePostCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
-        
+
         return Redirect(returnUrl ?? "/");
     }
 }

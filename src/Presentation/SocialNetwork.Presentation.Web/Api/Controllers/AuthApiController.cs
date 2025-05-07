@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SocialNetwork.Application.Contracts.Commands.Auth;
@@ -23,13 +24,13 @@ public class AuthApiController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var response = await _authService.Register(
             new(request.Username, request.Password, request.Name, request.Surname));
-
-        if (response is RegisterUserCommand.Response.InvalidRequest invalidRequest)
-        {
-            return BadRequest(invalidRequest.Message);
-        }
 
         if (response is RegisterUserCommand.Response.UserAlreadyExists userAlreadyExists)
         {
@@ -49,6 +50,11 @@ public class AuthApiController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> Login(LoginModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var response = await _authService.Login(new(request.Username, request.Password));
 
         if (response is LoginUserCommand.Response.NotFound)
@@ -77,6 +83,7 @@ public class AuthApiController : ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpPost("logout")]
     public ActionResult Logout()
     {

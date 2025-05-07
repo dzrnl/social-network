@@ -12,8 +12,6 @@ public static class ChangeUserNameCommand
 
         public record Failure(string Message) : Response;
 
-        public sealed record InvalidRequest(string Message) : Failure(Message);
-
         public sealed record NotFound() : Failure("User not found");
     }
 }

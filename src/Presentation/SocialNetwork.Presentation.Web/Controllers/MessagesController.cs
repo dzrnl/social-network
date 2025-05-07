@@ -26,9 +26,9 @@ public class MessagesController : BaseController
     {
         var response = await _messageService.GetAllMessages(new());
 
-        if (response is GetAllMessagesCommand.Response.Failure)
+        if (response is GetAllMessagesCommand.Response.Failure failure)
         {
-            return BadRequest();
+            return StatusCode(500, failure.Message);
         }
 
         var success = (GetAllMessagesCommand.Response.Success)response;

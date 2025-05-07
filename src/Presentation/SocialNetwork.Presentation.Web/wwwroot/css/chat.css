@@ -31,6 +31,7 @@ html, body {
 .chat-box::-webkit-scrollbar {
     display: none;
 }
+
 .chat-message-wrapper {
     width: 100%;
     display: flex;
@@ -53,6 +54,10 @@ html, body {
     padding: 10px 14px;
     max-width: 80%;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-message .message-content:not(:last-child) {
+    margin-bottom: 0.5rem;
 }
 
 .sender-name {

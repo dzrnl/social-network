@@ -45,54 +45,6 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetUsers_ShouldReturnFailure_WhenPageIsLessThan1()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-
-        var userService = new UserService(mockedUserRepository.Object);
-
-        var response = await userService.GetUsers(new(0, 10));
-
-        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Page number must be greater than or equal to 1", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task GetUsers_ShouldReturnFailure_WhenPageSizeIsLessThan1()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-
-        var userService = new UserService(mockedUserRepository.Object);
-
-        var response = await userService.GetUsers(new(1, 0));
-
-        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Page size must be greater than or equal to 1", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task GetUsers_ShouldReturnFailure_WhenPageSizeExceedsMaxPageSize()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-
-        var userService = new UserService(mockedUserRepository.Object);
-
-        var response = await userService.GetUsers(new(1, UserService.MaxPageSize + 1));
-
-        var failure = Assert.IsType<GetUsersCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal($"Page size must not exceed {UserService.MaxPageSize}", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.FindPaged(It.IsAny<PaginationQuery>()), Times.Never);
-    }
-
-    [Fact]
     public async Task GetUsers_ShouldReturnFailure_WhenRepositoryThrowsException()
     {
         var mockedUserRepository = new Mock<IUserRepository>();
@@ -199,25 +151,6 @@ public class UserServiceTests
             repo.ChangeName(It.Is<ChangeUserNameQuery>(q =>
                 q.Id == userId && q.NewName == newName)
             ), Times.Once);
-    }
-
-    [Fact]
-    public async Task ChangeUserName_ShouldReturnInvalidRequest_WhenNameIsInvalid()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-
-        const long userId = 1;
-        const string invalidName = "";
-
-        var userService = new UserService(mockedUserRepository.Object);
-
-        var response = await userService.ChangeUserName(new(userId, invalidName));
-
-        var failure = Assert.IsType<ChangeUserNameCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Name cannot be empty", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.ChangeName(It.IsAny<ChangeUserNameQuery>()), Times.Never);
     }
 
     [Fact]

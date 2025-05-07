@@ -23,12 +23,12 @@ public class UsersApiController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserModel>>> GetUsers([FromQuery] GetUsersModel model)
     {
-        var response = await _userService.GetUsers(new(model.Page, model.PageSize));
-
-        if (response is GetUsersCommand.Response.InvalidRequest invalidRequest)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(invalidRequest.Message);
+            return BadRequest(ModelState);
         }
+
+        var response = await _userService.GetUsers(new(model.Page, model.PageSize));
 
         if (response is GetUsersCommand.Response.Failure failure)
         {
@@ -71,12 +71,12 @@ public class UsersApiController : ControllerBase
             return Forbid();
         }
 
-        var response = await _userService.ChangeUserName(new(id, model.NewName));
-
-        if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(invalidRequest.Message);
+            return BadRequest(ModelState);
         }
+
+        var response = await _userService.ChangeUserName(new(id, model.Name));
 
         if (response is ChangeUserNameCommand.Response.NotFound)
         {
@@ -90,7 +90,7 @@ public class UsersApiController : ControllerBase
 
         return Ok();
     }
-    
+
     [HttpPatch("{id:long}/surname")]
     [Authorize]
     public async Task<ActionResult> ChangeUserSurname(long id, ChangeUserSurnameModel model)
@@ -100,12 +100,12 @@ public class UsersApiController : ControllerBase
             return Forbid();
         }
 
-        var response = await _userService.ChangeUserSurname(new(id, model.NewSurname));
-
-        if (response is ChangeUserSurnameCommand.Response.InvalidRequest invalidRequest)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(invalidRequest.Message);
+            return BadRequest(ModelState);
         }
+
+        var response = await _userService.ChangeUserSurname(new(id, model.Surname));
 
         if (response is ChangeUserSurnameCommand.Response.NotFound)
         {

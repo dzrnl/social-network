@@ -24,14 +24,14 @@ public class MessagesApiController : ControllerBase
     [HttpPost("send")]
     public async Task<ActionResult> SendMessage(SendMessageModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var currentUserId = _currentUserManager.CurrentUser!.Id;
 
         var response = await _messageService.SendMessage(new(currentUserId, request.Content));
-
-        if (response is SendMessageCommand.Response.InvalidRequest invalidRequest)
-        {
-            return BadRequest(invalidRequest.Message);
-        }
 
         if (response is SendMessageCommand.Response.UserNotFound userNotFound)
         {

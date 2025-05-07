@@ -13,7 +13,5 @@ public static class GetPostsCommand
         public sealed record Success(List<Post> Posts) : Response;
 
         public record Failure(string Message) : Response;
-
-        public sealed record InvalidRequest(string Message) : Failure(Message);
     }
 }

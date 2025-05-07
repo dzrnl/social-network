@@ -3,7 +3,6 @@ using SocialNetwork.Application.Abstractions.Queries.Users;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Contracts.Services;
-using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
 
@@ -22,26 +21,6 @@ public class AuthService : IAuthService
 
     public async Task<RegisterUserCommand.Response> Register(RegisterUserCommand.Request request)
     {
-        if (UserValidation.ValidateUsername(request.Username) is { } validationUsernameError)
-        {
-            return new RegisterUserCommand.Response.InvalidRequest(validationUsernameError);
-        }
-
-        if (UserValidation.ValidateName(request.Name) is { } validationNameError)
-        {
-            return new RegisterUserCommand.Response.InvalidRequest(validationNameError);
-        }
-
-        if (UserValidation.ValidateSurname(request.Surname) is { } validationSurnameError)
-        {
-            return new RegisterUserCommand.Response.InvalidRequest(validationSurnameError);
-        }
-
-        if (UserValidation.ValidatePassword(request.Password) is { } validationPasswordError)
-        {
-            return new RegisterUserCommand.Response.InvalidRequest(validationPasswordError);
-        }
-
         var hashedPassword = _passwordHasher.GenerateHash(request.Password);
 
         var query = new CreateUserQuery(request.Username, hashedPassword, request.Name, request.Surname);

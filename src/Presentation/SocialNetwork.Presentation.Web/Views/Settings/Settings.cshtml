@@ -16,12 +16,14 @@
                             <label for="Name" class="form-label">Имя</label>
                             <input type="text" id="Name" name="Name" class="form-control" value="@Model.Name"
                                    placeholder="Введите новое имя"/>
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label for="Surname" class="form-label">Фамилия</label>
                             <input type="text" id="Surname" name="Surname" class="form-control" value="@Model.Surname"
                                    placeholder="Введите новую фамилию"/>
+                            <span asp-validation-for="Surname" class="text-danger"></span>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Сохранить изменения</button>
@@ -37,22 +39,6 @@
                     </form>
                 </div>
             </div>
-
-            @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
-            {
-                <div class="alert alert-danger mt-4">
-                    @{
-                        var modelErrorCollection = ViewData.ModelState[string.Empty]?.Errors;
-                    }
-                    @if (modelErrorCollection != null)
-                    {
-                        foreach (var error in modelErrorCollection)
-                        {
-                            <div>@error.ErrorMessage</div>
-                        }
-                    }
-                </div>
-            }
         </div>
     </div>
 </div>

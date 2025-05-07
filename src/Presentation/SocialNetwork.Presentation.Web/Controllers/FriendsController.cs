@@ -31,7 +31,7 @@ public class FriendsController : BaseController
 
         if (response is GetUserFriendsCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         var success = (GetUserFriendsCommand.Response.Success)response;
@@ -52,7 +52,7 @@ public class FriendsController : BaseController
 
         if (response is AddFriendCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         return Redirect(returnUrl ?? "/");
@@ -65,7 +65,7 @@ public class FriendsController : BaseController
 
         if (response is RemoveFriendCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         return Redirect(returnUrl ?? "/");

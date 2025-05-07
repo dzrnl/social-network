@@ -14,8 +14,6 @@ public static class GetUserPostsCommand
 
         public record Failure(string Message) : Response;
 
-        public sealed record InvalidRequest(string Message) : Failure(Message);
-
         public sealed record UserNotFound() : Failure("User not found");
     }
 }

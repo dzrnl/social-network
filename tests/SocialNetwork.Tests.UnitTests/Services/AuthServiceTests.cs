@@ -6,7 +6,6 @@ using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Auth;
 using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Services;
-using SocialNetwork.Application.Validations;
 using Xunit;
 
 namespace SocialNetwork.Tests.UnitTests.Services;
@@ -37,7 +36,8 @@ public class AuthServiceTests
             .ReturnsAsync((User?)null);
         mockedUserRepository
             .Setup(repo => repo.Add(It.Is<CreateUserQuery>(q =>
-                q.Username == userUsername && q.PasswordHash == passwordHash && q.Name == userName)))
+                q.Username == userUsername && q.PasswordHash == passwordHash && q.Name == userName
+                && q.Surname == surname)))
             .ReturnsAsync(new User(userId, userUsername, userName, surname));
 
         var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
@@ -53,86 +53,6 @@ public class AuthServiceTests
             repo.Add(It.Is<CreateUserQuery>(q =>
                 q.Username == userUsername && q.PasswordHash == passwordHash && q.Name == userName)
             ), Times.Once);
-    }
-
-    [Fact]
-    public async Task RegisterUser_ShouldReturnFailure_WhenUsernameIsEmpty()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-        var mockedPasswordHasher = new Mock<IPasswordHasher>();
-        var mockedJwtProvider = new Mock<IJwtProvider>();
-
-        var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
-            mockedJwtProvider.Object);
-
-        var response = await authService.Register(new("", "pass", "Name", "Surname"));
-
-        var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Username cannot be empty", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task RegisterUser_ShouldReturnFailure_WhenNameIsEmpty()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-        var mockedPasswordHasher = new Mock<IPasswordHasher>();
-        var mockedJwtProvider = new Mock<IJwtProvider>();
-
-        var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
-            mockedJwtProvider.Object);
-
-        var response = await authService.Register(new("username", "pass", "", "Surname"));
-
-        var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Name cannot be empty", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task RegisterUser_ShouldReturnFailure_WhenUsernameIsTooLong()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-        var mockedPasswordHasher = new Mock<IPasswordHasher>();
-        var mockedJwtProvider = new Mock<IJwtProvider>();
-
-        var longUsername = new string('a', UserValidation.MaxUsernameLength + 1);
-
-        var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
-            mockedJwtProvider.Object);
-
-        var response = await authService.Register(new(longUsername, "pass", "Name", "Surname"));
-
-        var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Username is too long", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task RegisterUser_ShouldReturnFailure_WhenNameIsTooLong()
-    {
-        var mockedUserRepository = new Mock<IUserRepository>();
-        var mockedPasswordHasher = new Mock<IPasswordHasher>();
-        var mockedJwtProvider = new Mock<IJwtProvider>();
-
-        var longName = new string('a', UserValidation.MaxNameLength + 1);
-
-        var authService = new AuthService(mockedUserRepository.Object, mockedPasswordHasher.Object,
-            mockedJwtProvider.Object);
-
-        var response = await authService.Register(new("username", "pass", longName, "Surname"));
-
-        var failure = Assert.IsType<RegisterUserCommand.Response.InvalidRequest>(response);
-
-        Assert.Equal("Name is too long", failure.Message);
-
-        mockedUserRepository.Verify(repo => repo.Add(It.IsAny<CreateUserQuery>()), Times.Never);
     }
 
     [Fact]

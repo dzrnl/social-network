@@ -5,6 +5,7 @@ using SocialNetwork.Application.Contracts.Services;
 using SocialNetwork.Application.Services;
 using SocialNetwork.Presentation.Web.Models.Auth;
 using SocialNetwork.Infrastructure.Security;
+using SocialNetwork.Presentation.Web.Filters;
 
 namespace SocialNetwork.Presentation.Web.Controllers;
 
@@ -37,13 +38,12 @@ public class AuthController : BaseController
     [HttpPost("/register")]
     public async Task<IActionResult> Register(RegisterModel model)
     {
-        var response = await _authService.Register(new(model.Username, model.Password, model.Name, model.Surname));
-
-        if (response is RegisterUserCommand.Response.InvalidRequest invalidRequest)
+        if (!ModelState.IsValid)
         {
-            ModelState.AddModelError(string.Empty, invalidRequest.Message);
             return View(model);
         }
+
+        var response = await _authService.Register(new(model.Username, model.Password, model.Name, model.Surname));
 
         if (response is RegisterUserCommand.Response.UserAlreadyExists userAlreadyExists)
         {
@@ -53,7 +53,7 @@ public class AuthController : BaseController
 
         if (response is RegisterUserCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         return RedirectToAction("Login");
@@ -73,23 +73,28 @@ public class AuthController : BaseController
     [HttpPost("/login")]
     public async Task<IActionResult> Login(LoginModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
         var response = await _authService.Login(new(model.Username, model.Password));
 
         if (response is LoginUserCommand.Response.NotFound notFound)
         {
-            ModelState.AddModelError(string.Empty, notFound.Message);
+            ModelState.AddModelError("Username", notFound.Message);
             return View(model);
         }
 
         if (response is LoginUserCommand.Response.InvalidCredentials invalidCredentials)
         {
-            ModelState.AddModelError(string.Empty, invalidCredentials.Message);
+            ModelState.AddModelError("Password", invalidCredentials.Message);
             return View(model);
         }
 
         if (response is LoginUserCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         var success = (LoginUserCommand.Response.Success)response;
@@ -103,6 +108,7 @@ public class AuthController : BaseController
         return Redirect("/");
     }
 
+    [AuthorizeUser]
     [HttpPost("/logout")]
     public IActionResult Logout()
     {

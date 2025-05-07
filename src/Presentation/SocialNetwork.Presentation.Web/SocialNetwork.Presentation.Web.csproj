@@ -27,8 +27,4 @@
         <None Include="Properties\**" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\lib\" />
-    </ItemGroup>
-
 </Project>

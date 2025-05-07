@@ -7,5 +7,5 @@ public interface IMessageRepository
 {
     Task<Message> Add(CreateMessageQuery query);
 
-    Task<List<Message>> GetAll();
+    Task<List<Message>> GetAll(); // TODO: Pagination
 }

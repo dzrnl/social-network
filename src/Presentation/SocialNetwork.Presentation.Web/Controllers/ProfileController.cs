@@ -35,40 +35,37 @@ public class ProfileController : BaseController
     {
         var userResponse = await _userService.GetUserByUsername(new(username));
 
-        if (userResponse is GetUserCommand.Response.NotFound)
+        if (userResponse is not GetUserCommand.Response.Success userSuccess)
         {
-            return NotFound();
+            return userResponse switch
+            {
+                GetUserCommand.Response.NotFound => NotFound(),
+                GetUserCommand.Response.Failure userFailure => StatusCode(500, userFailure.Message),
+                _ => StatusCode(500, "Unknown error occurred")
+            };
         }
 
-        if (userResponse is GetUserCommand.Response.Failure)
-        {
-            return UnprocessableEntity();
-        }
-
-        var user = ((GetUserCommand.Response.Success)userResponse).User;
-
+        var user = userSuccess.User;
         var userModel = UserModel.ToViewModel(user);
 
-        var userPostsResponse = await _postService.GetUserPosts(new(user.Id, 1, PageSize));
+        var postsResponse = await _postService.GetUserPosts(new(user.Id, 1, PageSize));
 
-        if (userPostsResponse is GetUserPostsCommand.Response.UserNotFound)
+        if (postsResponse is not GetUserPostsCommand.Response.Success postsSuccess)
         {
-            return NotFound();
+            return postsResponse switch
+            {
+                GetUserPostsCommand.Response.UserNotFound => NotFound(),
+                GetUserPostsCommand.Response.Failure postsFailure => StatusCode(500, postsFailure.Message),
+                _ => StatusCode(500, "Unknown error occurred")
+            };
         }
 
-        if (userPostsResponse is GetUserPostsCommand.Response.Failure)
-        {
-            return UnprocessableEntity();
-        }
-
-        var posts = ((GetUserPostsCommand.Response.Success)userPostsResponse).Posts;
-
+        var posts = postsSuccess.Posts;
         var postsModel = posts.Select(PostModel.ToViewModel).ToList();
 
         if (CurrentUser == null)
         {
             var profileModel = new ProfileViewModel(userModel, false, postsModel);
-
             return View(profileModel);
         }
 
@@ -76,21 +73,19 @@ public class ProfileController : BaseController
         {
             var responseAreFriends = await _friendshipService.AreFriends(new(CurrentUser.Id, user.Id));
 
-            if (responseAreFriends is AreFriendsCommand.Response.Failure failure)
+            if (responseAreFriends is AreFriendsCommand.Response.Failure areFriendsFailure)
             {
-                return UnprocessableEntity(failure.Message);
+                return StatusCode(500, areFriendsFailure.Message);
             }
 
             var isFriend = ((AreFriendsCommand.Response.Success)responseAreFriends).AreFriends;
 
             var profileModel = new ProfileViewModel(userModel, isFriend, postsModel);
-
             return View(profileModel);
         }
         else
         {
             var profileModel = new ProfileViewModel(userModel, true, postsModel);
-
             return View(profileModel);
         }
     }

@@ -101,6 +101,11 @@ public class FriendshipApiController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetUserFriends([FromQuery] GetUserFriendsModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var response = await _friendshipService.GetUserFriends(new(model.UserId, model.Page, model.PageSize));
 
         if (response is GetUserFriendsCommand.Response.UserNotFound userNotFound)

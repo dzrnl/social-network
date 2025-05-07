@@ -32,7 +32,11 @@ public class SettingsController : BaseController
 
         var user = ((GetUserCommand.Response.Success)userResponse).User;
 
-        var publicInfoModel = new UserPublicInfoModel(user.Name, user.Surname);
+        var publicInfoModel = new UserPublicInfoModel
+        {
+            Name = user.Name,
+            Surname = user.Surname
+        };
 
         return View("Settings", publicInfoModel);
     }
@@ -40,19 +44,18 @@ public class SettingsController : BaseController
     [HttpPost]
     public async Task<IActionResult> UpdateUserPublicInfo(UserPublicInfoModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View("Settings", model); 
+        }
+        
         if (model.Name != AuthUser.Name)
         {
             var response = await _userService.ChangeUserName(new(AuthUser.Id, model.Name));
 
-            if (response is ChangeUserNameCommand.Response.InvalidRequest invalidRequest)
-            {
-                ModelState.AddModelError(string.Empty, invalidRequest.Message);
-                return View("Settings");
-            }
-
             if (response is ChangeUserNameCommand.Response.Failure failure)
             {
-                return UnprocessableEntity(failure.Message);
+                return StatusCode(500, failure.Message);
             }
         }
 
@@ -60,15 +63,9 @@ public class SettingsController : BaseController
         {
             var response = await _userService.ChangeUserSurname(new(AuthUser.Id, model.Surname));
 
-            if (response is ChangeUserSurnameCommand.Response.InvalidRequest invalidRequest)
-            {
-                ModelState.AddModelError(string.Empty, invalidRequest.Message);
-                return View("Settings");
-            }
-
             if (response is ChangeUserSurnameCommand.Response.Failure failure)
             {
-                return UnprocessableEntity(failure.Message);
+                return StatusCode(500, failure.Message);
             }
         }
 
@@ -82,7 +79,7 @@ public class SettingsController : BaseController
 
         if (response is DeleteUserCommand.Response.Failure failure)
         {
-            return UnprocessableEntity(failure.Message);
+            return StatusCode(500, failure.Message);
         }
 
         var cookieName = _tokenOptions.Value.AccessTokenCookieName;

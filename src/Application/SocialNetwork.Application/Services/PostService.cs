@@ -3,14 +3,11 @@ using SocialNetwork.Application.Abstractions.Queries.Posts;
 using SocialNetwork.Application.Abstractions.Repositories;
 using SocialNetwork.Application.Contracts.Commands.Posts;
 using SocialNetwork.Application.Contracts.Services;
-using SocialNetwork.Application.Validations;
 
 namespace SocialNetwork.Application.Services;
 
 public class PostService : IPostService
 {
-    public const int MaxPageSize = 100;
-
     private readonly IPostRepository _postRepository;
     private readonly IUserRepository _userRepository;
 
@@ -22,11 +19,6 @@ public class PostService : IPostService
 
     public async Task<CreatePostCommand.Response> CreatePost(CreatePostCommand.Request request)
     {
-        if (PostValidation.ValidateContent(request.Content) is { } validationContentError)
-        {
-            return new CreatePostCommand.Response.InvalidRequest(validationContentError);
-        }
-
         var query = new CreatePostQuery(request.AuthorId, request.Content);
 
         try
@@ -50,11 +42,6 @@ public class PostService : IPostService
 
     public async Task<GetPostsCommand.Response> GetPosts(GetPostsCommand.Request request)
     {
-        if (PaginationValidation.Validate(request.Page, request.PageSize, MaxPageSize) is { } paginationError)
-        {
-            return new GetPostsCommand.Response.InvalidRequest(paginationError);
-        }
-
         var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
 
         try
@@ -71,11 +58,6 @@ public class PostService : IPostService
 
     public async Task<GetUserPostsCommand.Response> GetUserPosts(GetUserPostsCommand.Request request)
     {
-        if (PaginationValidation.Validate(request.Page, request.PageSize, MaxPageSize) is { } paginationError)
-        {
-            return new GetUserPostsCommand.Response.InvalidRequest(paginationError);
-        }
-
         var paginationQuery = new PaginationQuery(request.Page, request.PageSize);
 
         try
