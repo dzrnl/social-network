@@ -13,7 +13,5 @@ public static class SearchUsersCommand
         public sealed record Success(List<User> Users) : Response;
 
         public record Failure(string Message) : Response;
-
-        public sealed record InvalidRequest(string Message) : Failure(Message);
     }
 }
