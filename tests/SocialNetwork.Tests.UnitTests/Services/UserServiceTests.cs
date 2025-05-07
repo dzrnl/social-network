@@ -16,7 +16,7 @@ public class UserServiceTests
     {
         var mockedUserRepository = new Mock<IUserRepository>();
 
-        var expectedUsers = new List<User>
+        var expectedUsers = new List<UserPreview>
         {
             new(1, "ivanov123", "Ivan", "Ivanov"),
             new(2, "petrov12", "Peter", "Petrov")

@@ -70,7 +70,7 @@ public class FriendshipRepository : IFriendshipRepository
         return user.Friends.Any(f => f.Id == userId2);
     }
 
-    public async Task<List<User>> FindFriends(long userId, PaginationQuery pagination)
+    public async Task<List<UserPreview>> FindFriends(long userId, PaginationQuery pagination)
     {
         var friends = await _context.Users
             .AsNoTracking()
@@ -79,6 +79,6 @@ public class FriendshipRepository : IFriendshipRepository
             .Take(pagination.PageSize)
             .ToListAsync();
 
-        return friends.Select(u => u.ToDomain()).ToList();
+        return friends.Select(u => u.ToPreview()).ToList();
     }
 }

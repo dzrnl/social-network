@@ -22,7 +22,7 @@ public class SearchController : BaseController
     [HttpGet]
     public async Task<IActionResult> Search(string? query, int page = 1)
     {
-        List<User> users;
+        List<UserPreview> users;
 
         query = query?.Trim().ToLower();
 
@@ -54,7 +54,7 @@ public class SearchController : BaseController
         }
 
         var usersModel = users
-            .Select(UserModel.ToViewModel)
+            .Select(UserPreviewModel.ToViewModel)
             .ToList();
 
         var searchResult = new SearchUsersResultModel(page, PageSize, usersModel, query);

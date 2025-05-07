@@ -10,7 +10,7 @@ public static class GetUserFriendsCommand
     {
         private Response() { }
 
-        public sealed record Success(List<User> Friends) : Response;
+        public sealed record Success(List<UserPreview> Friends) : Response;
 
         public record Failure(string Message) : Response;
 

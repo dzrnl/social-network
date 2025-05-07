@@ -37,7 +37,7 @@ public class FriendsController : BaseController
         var success = (GetUserFriendsCommand.Response.Success)response;
 
         var friends = success.Friends
-            .Select(UserModel.ToViewModel)
+            .Select(UserPreviewModel.ToViewModel)
             .ToList();
 
         var result = new UserFriendsModel(friends);

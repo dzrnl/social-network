@@ -34,7 +34,7 @@ public class UserRepository : IUserRepository
         return userEntity.ToDomain();
     }
 
-    public async Task<List<User>> FindPaged(PaginationQuery query)
+    public async Task<List<UserPreview>> FindPaged(PaginationQuery query)
     {
         var users = await _context.Users
             .AsNoTracking()
@@ -43,10 +43,10 @@ public class UserRepository : IUserRepository
             .Take(query.PageSize)
             .ToListAsync();
 
-        return users.Select(u => u.ToDomain()).ToList();
+        return users.Select(u => u.ToPreview()).ToList();
     }
 
-    public async Task<List<User>> SearchPaged(string query, PaginationQuery pagination)
+    public async Task<List<UserPreview>> SearchPaged(string query, PaginationQuery pagination)
     {
         var usersQuery = _context.Users
             .AsNoTracking()
@@ -61,7 +61,7 @@ public class UserRepository : IUserRepository
             .Take(pagination.PageSize)
             .ToListAsync();
 
-        return users.Select(u => u.ToDomain()).ToList();
+        return users.Select(u => u.ToPreview()).ToList();
     }
 
     public async Task<User?> FindById(long id)

@@ -11,5 +11,5 @@ public interface IFriendshipRepository
 
     Task<bool> AreFriends(long userId1, long userId2);
 
-    Task<List<User>> FindFriends(long userId, PaginationQuery pagination);
+    Task<List<UserPreview>> FindFriends(long userId, PaginationQuery pagination);
 }

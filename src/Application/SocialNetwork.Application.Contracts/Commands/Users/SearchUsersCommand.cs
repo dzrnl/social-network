@@ -10,7 +10,7 @@ public static class SearchUsersCommand
     {
         private Response() { }
 
-        public sealed record Success(List<User> Users) : Response;
+        public sealed record Success(List<UserPreview> Users) : Response;
 
         public record Failure(string Message) : Response;
     }

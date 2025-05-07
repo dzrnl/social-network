@@ -121,7 +121,7 @@ public class FriendshipApiController : ControllerBase
         var success = (GetUserFriendsCommand.Response.Success)response;
 
         var userFriendsModel = new UserFriendsModel(success.Friends
-            .Select(UserModel.ToViewModel)
+            .Select(UserPreviewModel.ToViewModel)
             .ToList());
 
         return Ok(userFriendsModel);

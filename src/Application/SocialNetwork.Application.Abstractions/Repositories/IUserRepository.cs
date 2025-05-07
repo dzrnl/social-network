@@ -9,9 +9,9 @@ public interface IUserRepository
 {
     Task<User> Add(CreateUserQuery query);
 
-    Task<List<User>> FindPaged(PaginationQuery query);
+    Task<List<UserPreview>> FindPaged(PaginationQuery query);
 
-    Task<List<User>> SearchPaged(string query, PaginationQuery pagination);
+    Task<List<UserPreview>> SearchPaged(string query, PaginationQuery pagination);
 
     Task<User?> FindById(long id);
 
