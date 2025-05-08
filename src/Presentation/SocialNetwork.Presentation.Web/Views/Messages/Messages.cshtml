@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = "Сообщения";
     var currentUser = (SocialNetwork.Application.Models.User)ViewData["CurrentUser"]!;
-    long? previousSenderId = null;
+    long? prevSenderId = null;
+    DateTime? prevTime = null;
     var openGroup = false;
 }
 
@@ -15,8 +16,14 @@
                 var msg = Model.Messages[i];
                 var senderId = msg.Sender?.Id;
                 var isOwnMessage = senderId == currentUser.Id;
-                var isFirstOfGroup = senderId != previousSenderId || senderId == null;
-                var isLastOfGroup = i == Model.Messages.Count - 1 || Model.Messages[i + 1].Sender?.Id != senderId || senderId == null;
+
+                var isTimeGapBig = prevTime == null || (msg.SentAt - prevTime.Value).TotalMinutes > 5;
+
+                var isFirstOfGroup = senderId != prevSenderId || isTimeGapBig || senderId == null;
+                var isLastOfGroup = i == Model.Messages.Count - 1 ||
+                                    Model.Messages[i + 1].Sender?.Id != senderId ||
+                                    (Model.Messages[i + 1].SentAt - msg.SentAt).TotalMinutes > 5 ||
+                                    senderId == null;
 
                 if (isFirstOfGroup)
                 {
@@ -50,7 +57,8 @@
                     openGroup = false;
                 }
 
-                previousSenderId = senderId;
+                prevSenderId = senderId;
+                prevTime = msg.SentAt;
             }
         </div>
     </div>

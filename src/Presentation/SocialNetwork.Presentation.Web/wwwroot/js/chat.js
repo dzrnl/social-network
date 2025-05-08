@@ -5,6 +5,7 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 let previousSenderId = null;
+let previousMessageTimestamp = null;
 let lastMessageWrapper = null;
 
 connection.on("ReceiveMessage", function (message) {
@@ -12,9 +13,13 @@ connection.on("ReceiveMessage", function (message) {
     const senderId = message.sender ? message.sender.id : null;
     const isOwnMessage = senderId === userId;
 
+    const currentTimestamp = new Date(message.sentAt);
     const isSameSenderAsPrevious = previousSenderId === senderId;
+    const isWithinFiveMinutes = previousMessageTimestamp && (currentTimestamp - previousMessageTimestamp) / (1000 * 60) <= 5;
 
-    if (!isSameSenderAsPrevious || !lastMessageWrapper) {
+    const shouldStartNewGroup = !isSameSenderAsPrevious || !isWithinFiveMinutes || !lastMessageWrapper;
+
+    if (shouldStartNewGroup) {
         const wrapper = document.createElement("div");
         wrapper.className = isOwnMessage
             ? "chat-message-wrapper own-message"
@@ -60,6 +65,8 @@ connection.on("ReceiveMessage", function (message) {
     }
 
     previousSenderId = senderId;
+    previousMessageTimestamp = currentTimestamp;
+    
     scrollToBottom();
 });
 

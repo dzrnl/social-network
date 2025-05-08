@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Application.Contracts.Commands.Messages;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Presentation.Web.Models.Messages;
 
 namespace SocialNetwork.Presentation.Web.Hubs;
 
@@ -24,7 +25,7 @@ public class ChatHub : Hub
 
         var success = (SendMessageCommand.Response.Success)response;
 
-        var message = success.Message;
+        var message = MessageModel.ToViewModel(success.Message);
 
         await Clients.All.SendAsync("ReceiveMessage", message);
     }
