@@ -1,0 +1,19 @@
+@{
+    var currentPath = Context.Request.Path.Value?.ToLowerInvariant();
+}
+
+<div class="card">
+    <div class="card-body p-0">
+        <ul class="friend-menu list-unstyled mb-0">
+            <li>
+                <a class="friend-menu-link @(currentPath == "/friends" ? "active" : "")" href="/friends">Друзья</a>
+            </li>
+            <li>
+                <a class="friend-menu-link @(currentPath == "/friends/requests" ? "active" : "")" href="/friends/requests">Заявки в друзья</a>
+            </li>
+            <li>
+                <a class="friend-menu-link @(currentPath == "/friends/sent" ? "active" : "")" href="/friends/sent">Исходящие заявки</a>
+            </li>
+        </ul>
+    </div>
+</div>

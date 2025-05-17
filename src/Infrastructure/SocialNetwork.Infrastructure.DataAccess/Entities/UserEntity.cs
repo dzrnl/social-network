@@ -13,4 +13,7 @@ public class UserEntity
     public required string Surname { get; set; }
 
     public List<UserEntity> Friends { get; set; } = [];
+
+    public List<FriendRequestEntity> SentRequests { get; set; } = [];
+    public List<FriendRequestEntity> ReceivedRequests { get; set; } = [];
 }

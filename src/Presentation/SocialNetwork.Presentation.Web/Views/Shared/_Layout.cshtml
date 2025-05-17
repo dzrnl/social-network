@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="~/css/styles.css">
     <link rel="stylesheet" type="text/css" href="~/css/shared/header.css">
     <link rel="stylesheet" type="text/css" href="~/css/shared/sidebar.css">
-    <link rel="stylesheet" type="text/css" href="~/css/chat.css">
+    @await RenderSectionAsync("HeadArea", required: false)
 </head>
 <body>
 @await Html.PartialAsync("_Header")

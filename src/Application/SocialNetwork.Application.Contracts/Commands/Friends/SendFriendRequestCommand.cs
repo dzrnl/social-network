@@ -1,6 +1,8 @@
+using SocialNetwork.Application.Models;
+
 namespace SocialNetwork.Application.Contracts.Commands.Friends;
 
-public static class AddFriendCommand
+public static class SendFriendRequestCommand
 {
     public sealed record Request(long UserId, long FriendId);
 
@@ -8,7 +10,7 @@ public static class AddFriendCommand
     {
         private Response() { }
 
-        public sealed record Success : Response;
+        public sealed record Success(FriendRequest FriendRequest) : Response;
 
         public record Failure(string Message) : Response;
 
@@ -17,5 +19,7 @@ public static class AddFriendCommand
         public sealed record UserNotFound() : Failure("User not found");
 
         public sealed record AlreadyFriends() : Failure("Users are already friends");
+
+        public sealed record RequestAlreadySent() : Failure("Request is already sent");
     }
 }

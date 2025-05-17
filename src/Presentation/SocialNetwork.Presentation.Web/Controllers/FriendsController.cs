@@ -45,12 +45,93 @@ public class FriendsController : BaseController
         return View(result);
     }
 
-    [HttpPost("add/{friendId:long}")]
-    public async Task<IActionResult> AddFriend(long friendId, [FromForm] string? returnUrl)
+    [HttpGet("requests")]
+    public async Task<IActionResult> IncomingRequests()
     {
-        var response = await _friendshipService.AddFriend(new(AuthUser.Id, friendId));
+        var response = await _friendshipService.GetUserIncomingRequests(new(AuthUser.Id));
 
-        if (response is AddFriendCommand.Response.Failure failure)
+        if (response is GetUserIncomingRequestsCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        var success = (GetUserIncomingRequestsCommand.Response.Success)response;
+
+        var friendRequests = success.IncomingRequests
+            .Select(FriendRequestModel.ToViewModel)
+            .ToList();
+
+        var result = new UserIncomingRequestsModel(friendRequests);
+
+        return View("IncomingRequests", result);
+    }
+
+    [HttpGet("sent")]
+    public async Task<IActionResult> SentRequests()
+    {
+        var response = await _friendshipService.GetUserSentRequests(new(AuthUser.Id));
+
+        if (response is GetUserSentRequestsCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        var success = (GetUserSentRequestsCommand.Response.Success)response;
+
+        var friendRequests = success.SentRequests
+            .Select(FriendRequestModel.ToViewModel)
+            .ToList();
+
+        var result = new UserSentRequestsModel(friendRequests);
+
+        return View("SentRequests", result);
+    }
+
+    [HttpPost("request/{friendId:long}")]
+    public async Task<IActionResult> SendFriendRequest(long friendId, [FromForm] string? returnUrl)
+    {
+        var response = await _friendshipService.SendFriendRequest(new(AuthUser.Id, friendId));
+
+        if (response is SendFriendRequestCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        return Redirect(returnUrl ?? "/");
+    }
+
+    [HttpPost("accept/{requestId:long}")]
+    public async Task<IActionResult> AcceptFriendRequest(long requestId, [FromForm] string? returnUrl)
+    {
+        var response = await _friendshipService.AcceptFriendRequest(new(requestId));
+
+        if (response is AcceptFriendRequestCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        return Redirect(returnUrl ?? "/");
+    }
+
+    [HttpPost("decline/{requestId:long}")]
+    public async Task<IActionResult> DeclineFriendRequest(long requestId, [FromForm] string? returnUrl)
+    {
+        var response = await _friendshipService.DeclineFriendRequest(new(requestId));
+
+        if (response is DeclineFriendRequestCommand.Response.Failure failure)
+        {
+            return StatusCode(500, failure.Message);
+        }
+
+        return Redirect(returnUrl ?? "/");
+    }
+
+    [HttpPost("cancel/{requestId:long}")]
+    public async Task<IActionResult> CancelFriendRequest(long requestId, [FromForm] string? returnUrl)
+    {
+        var response = await _friendshipService.CancelFriendRequest(new(requestId));
+
+        if (response is CancelFriendRequestCommand.Response.Failure failure)
         {
             return StatusCode(500, failure.Message);
         }

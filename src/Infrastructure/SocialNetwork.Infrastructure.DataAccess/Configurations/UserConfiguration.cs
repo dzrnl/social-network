@@ -30,6 +30,18 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasMaxLength(255);
 
         builder
+            .HasMany(u => u.SentRequests)
+            .WithOne(r => r.FromUser)
+            .HasForeignKey(r => r.FromUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(u => u.ReceivedRequests)
+            .WithOne(r => r.ToUser)
+            .HasForeignKey(r => r.ToUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
             .HasMany(u => u.Friends)
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(

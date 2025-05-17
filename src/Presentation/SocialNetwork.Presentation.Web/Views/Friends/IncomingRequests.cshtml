@@ -1,0 +1,54 @@
+@model SocialNetwork.Presentation.Web.Models.Friends.UserIncomingRequestsModel
+
+@{
+    ViewData["Title"] = "Заявки в друзья";
+}
+
+@section HeadArea
+{
+    <link rel="stylesheet" type="text/css" href="~/css/friend-menu.css">
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            @if (Model.Requests.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var request in Model.Requests)
+                    {
+                        @await Html.PartialAsync("_UserListItem", request.FromUser)
+                        
+                        <div class="d-flex justify-content-end mt-2 mb-3">
+                            <form asp-action="DeclineFriendRequest"
+                                  asp-route-requestId="@request.Id"
+                                  method="post">
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    Отклонить
+                                </button>
+                            </form>
+                            
+                            <form asp-action="AcceptFriendRequest"
+                                  asp-route-requestId="@request.Id"
+                                  method="post">
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                                <button type="submit" class="btn btn-outline-success btn-sm">
+                                    Принять
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Нет заявок в друзья</p>
+            }
+        </div>
+
+        <div class="col-md-3">
+            @await Html.PartialAsync("_FriendMenu")
+        </div>
+    </div>
+</div>

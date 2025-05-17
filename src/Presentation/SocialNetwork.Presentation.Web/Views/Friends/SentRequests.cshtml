@@ -1,7 +1,7 @@
-@model SocialNetwork.Presentation.Web.Models.Friends.UserFriendsModel
+@model SocialNetwork.Presentation.Web.Models.Friends.UserSentRequestsModel
 
 @{
-    ViewData["Title"] = "Друзья";
+    ViewData["Title"] = "Исходящие заявки";
 }
 
 @section HeadArea
@@ -12,18 +12,20 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-9">
-            @if (Model.Friends.Any())
+            @if (Model.Requests.Any())
             {
                 <ul class="list-group">
-                    @foreach (var user in Model.Friends)
+                    @foreach (var request in Model.Requests)
                     {
-                        @await Html.PartialAsync("_UserListItem", user)
-
+                        @await Html.PartialAsync("_UserListItem", request.ToUser)
+                        
                         <div class="d-flex justify-content-end mt-2 mb-3">
-                            <form asp-action="DeleteFriend" asp-route-friendId="@user.Id" method="post">
+                            <form asp-action="CancelFriendRequest"
+                                  asp-route-requestId="@request.Id"
+                                  method="post" class="ms-3">
                                 <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    Удалить
+                                    Отменить
                                 </button>
                             </form>
                         </div>
@@ -32,7 +34,7 @@
             }
             else
             {
-                <p class="text-muted">Нет друзей</p>
+                <p class="text-muted">Нет исходящих заявок</p>
             }
         </div>
 

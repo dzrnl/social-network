@@ -27,29 +27,18 @@ public class FriendshipApiController : ControllerBase
     {
         var currentUserId = _currentUserManager.CurrentUser!.Id;
 
-        var response = await _friendshipService.AddFriend(new(currentUserId, userId));
+        var response = await _friendshipService.SendFriendRequest(new(currentUserId, userId));
 
-        if (response is AddFriendCommand.Response.SelfFriendship selfFriendship)
+        return response switch
         {
-            return BadRequest(selfFriendship.Message);
-        }
-
-        if (response is AddFriendCommand.Response.UserNotFound userNotFound)
-        {
-            return BadRequest(userNotFound.Message);
-        }
-
-        if (response is AddFriendCommand.Response.AlreadyFriends alreadyFriends)
-        {
-            return BadRequest(alreadyFriends.Message);
-        }
-
-        if (response is AddFriendCommand.Response.Failure failure)
-        {
-            return StatusCode(500, failure.Message);
-        }
-
-        return Ok();
+            SendFriendRequestCommand.Response.SelfFriendship r => BadRequest(r.Message),
+            SendFriendRequestCommand.Response.UserNotFound r => NotFound(r.Message),
+            SendFriendRequestCommand.Response.AlreadyFriends r => BadRequest(r.Message),
+            SendFriendRequestCommand.Response.RequestAlreadySent r => BadRequest(r.Message),
+            SendFriendRequestCommand.Response.Failure r => StatusCode(500, r.Message),
+            SendFriendRequestCommand.Response.Success => Ok(),
+            _ => StatusCode(500, "Неизвестная ошибка")
+        };
     }
 
     [HttpPost("remove/{userId:long}")]
@@ -60,22 +49,14 @@ public class FriendshipApiController : ControllerBase
 
         var response = await _friendshipService.RemoveFriend(new(currentUserId, userId));
 
-        if (response is RemoveFriendCommand.Response.UserNotFound userNotFound)
+        return response switch
         {
-            return BadRequest(userNotFound.Message);
-        }
-
-        if (response is RemoveFriendCommand.Response.NotFriends notFriends)
-        {
-            return BadRequest(notFriends.Message);
-        }
-
-        if (response is RemoveFriendCommand.Response.Failure failure)
-        {
-            return StatusCode(500, failure.Message);
-        }
-
-        return Ok();
+            RemoveFriendCommand.Response.UserNotFound r => NotFound(r.Message),
+            RemoveFriendCommand.Response.NotFriends r => BadRequest(r.Message),
+            RemoveFriendCommand.Response.Failure r => StatusCode(500, r.Message),
+            RemoveFriendCommand.Response.Success => Ok(),
+            _ => StatusCode(500, "Неизвестная ошибка")
+        };
     }
 
     [HttpGet("status")]
@@ -83,19 +64,13 @@ public class FriendshipApiController : ControllerBase
     {
         var response = await _friendshipService.AreFriends(new(user1Id, user2Id));
 
-        if (response is AreFriendsCommand.Response.UserNotFound userNotFound)
+        return response switch
         {
-            return BadRequest(userNotFound.Message);
-        }
-
-        if (response is AreFriendsCommand.Response.Failure failure)
-        {
-            return StatusCode(500, failure.Message);
-        }
-
-        var success = (AreFriendsCommand.Response.Success)response;
-
-        return Ok(success.AreFriends);
+            AreFriendsCommand.Response.UserNotFound r => NotFound(r.Message),
+            AreFriendsCommand.Response.Failure r => StatusCode(500, r.Message),
+            AreFriendsCommand.Response.Success s => Ok(s.AreFriends),
+            _ => StatusCode(500, "Неизвестная ошибка")
+        };
     }
 
     [HttpGet]

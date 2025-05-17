@@ -3,7 +3,9 @@ using SocialNetwork.Application.Contracts.Commands.Friends;
 using SocialNetwork.Application.Contracts.Commands.Posts;
 using SocialNetwork.Application.Contracts.Commands.Users;
 using SocialNetwork.Application.Contracts.Services;
+using SocialNetwork.Application.Models;
 using SocialNetwork.Application.Services;
+using SocialNetwork.Presentation.Web.Models.Friends;
 using SocialNetwork.Presentation.Web.Models.Posts;
 using SocialNetwork.Presentation.Web.Models.Profile;
 using SocialNetwork.Presentation.Web.Models.Users;
@@ -63,30 +65,37 @@ public class ProfileController : BaseController
         var posts = postsSuccess.Posts;
         var postsModel = posts.Select(PostModel.ToViewModel).ToList();
 
-        if (CurrentUser == null)
+        if (CurrentUser == null || CurrentUser.Id == user.Id)
         {
-            var profileModel = new ProfileViewModel(userModel, false, postsModel);
-            return View(profileModel);
+            return View(new ProfileViewModel(userModel, null, null, postsModel));
         }
 
-        if (CurrentUser.Id != user.Id)
-        {
-            var responseAreFriends = await _friendshipService.AreFriends(new(CurrentUser.Id, user.Id));
+        var responseFriendStatus = await _friendshipService.GetFriendStatus(new(CurrentUser.Id, user.Id));
 
-            if (responseAreFriends is AreFriendsCommand.Response.Failure areFriendsFailure)
+        if (responseFriendStatus is GetFriendStatusCommand.Response.Failure friendStatusFailure)
+        {
+            return StatusCode(500, friendStatusFailure.Message);
+        }
+
+        var status = ((GetFriendStatusCommand.Response.Success)responseFriendStatus).FriendStatus;
+
+        FriendRequest? friendRequest = null;
+        if (status is FriendStatus.Sent or FriendStatus.Incoming)
+        {
+            var response = await _friendshipService.GetFriendRequestByUsers(new(CurrentUser.Id, user.Id));
+
+            if (response is GetFriendRequestCommand.Response.Failure failure)
             {
-                return StatusCode(500, areFriendsFailure.Message);
+                return StatusCode(500, failure.Message);
             }
-
-            var isFriend = ((AreFriendsCommand.Response.Success)responseAreFriends).AreFriends;
-
-            var profileModel = new ProfileViewModel(userModel, isFriend, postsModel);
-            return View(profileModel);
+            
+            friendRequest = ((GetFriendRequestCommand.Response.Success)response).FriendRequest;
         }
-        else
-        {
-            var profileModel = new ProfileViewModel(userModel, true, postsModel);
-            return View(profileModel);
-        }
+
+        var friendRequestModel = friendRequest != null ? FriendRequestModel.ToViewModel(friendRequest) : null;
+
+        var profileModel = new ProfileViewModel(userModel, status, friendRequestModel, postsModel);
+
+        return View(profileModel);
     }
 }

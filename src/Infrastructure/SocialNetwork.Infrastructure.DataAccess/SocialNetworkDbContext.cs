@@ -8,6 +8,8 @@ public class SocialNetworkDbContext(DbContextOptions<SocialNetworkDbContext> opt
 {
     public DbSet<UserEntity> Users { get; set; }
 
+    public DbSet<FriendRequestEntity> FriendRequests { get; set; }
+
     public DbSet<MessageEntity> Messages { get; set; }
 
     public DbSet<PostEntity> Posts { get; set; }
@@ -15,6 +17,7 @@ public class SocialNetworkDbContext(DbContextOptions<SocialNetworkDbContext> opt
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new FriendRequestConfiguration());
         modelBuilder.ApplyConfiguration(new MessageConfiguration());
         modelBuilder.ApplyConfiguration(new PostConfiguration());
 
