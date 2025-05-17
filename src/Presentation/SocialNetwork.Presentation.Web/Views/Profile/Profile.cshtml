@@ -1,8 +1,9 @@
+@using SocialNetwork.Application.Models
 @model SocialNetwork.Presentation.Web.Models.Profile.ProfileViewModel
 
 @{
     ViewData["Title"] = "Профиль";
-    var currentUser = ViewData["CurrentUser"] as SocialNetwork.Application.Models.User;
+    var currentUser = ViewData["CurrentUser"] as User;
 }
 
 <div class="container mt-4">
@@ -23,23 +24,45 @@
                 <button type="submit" class="btn btn-outline-danger">Выйти</button>
             </form>
         }
-        else if (currentUser != null)
+        else if (currentUser != null && Model.FriendStatus != null && currentUser.Id != Model.User.Id)
         {
-            @if (!Model.IsFriend)
+            @switch (Model.FriendStatus)
             {
-                <form method="post" asp-controller="Friends" asp-action="AddFriend"
-                      asp-route-friendId="@Model.User.Id" class="text-right">
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
-                    <button type="submit" class="btn btn-outline-success">Добавить в друзья</button>
-                </form>
-            }
-            else
-            {
-                <form method="post" asp-controller="Friends" asp-action="DeleteFriend"
-                      asp-route-friendId="@Model.User.Id" class="text-right">
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
-                    <button type="submit" class="btn btn-outline-warning">Удалить из друзей</button>
-                </form>
+                case FriendStatus.Friend:
+                    <form method="post" asp-controller="Friends" asp-action="DeleteFriend"
+                          asp-route-friendId="@Model.User.Id" class="text-right">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                        <button type="submit" class="btn btn-outline-danger">Удалить из друзей</button>
+                    </form>
+                    break;
+                    
+                case FriendStatus.NotFriend:
+                    <form method="post" asp-controller="Friends" asp-action="SendFriendRequest"
+                          asp-route-friendId="@Model.User.Id" class="text-right">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                        <button type="submit" class="btn btn-outline-success">Добавить в друзья</button>
+                    </form>
+                    break;
+
+                case FriendStatus.Sent:
+                    <form method="post" asp-controller="Friends" asp-action="CancelFriendRequest"
+                          asp-route-requestId="@Model.FriendRequest?.Id" class="text-right">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                        <button type="submit" class="btn btn-outline-danger">Отменить заявку</button>
+                    </form>
+                    break;
+
+                case FriendStatus.Incoming:
+                    <form method="post" asp-controller="Friends" asp-action="AcceptFriendRequest"
+                          asp-route-requestId="@Model.FriendRequest?.Id" class="text-right">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path"/>
+                        <button type="submit" class="btn btn-outline-success">Принять заявку</button>
+                    </form>
+                    break;
+                case null:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     </div>
